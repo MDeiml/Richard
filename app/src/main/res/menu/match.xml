@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <item
+        app:showAsAction="ifRoom"
+        android:id="@+id/edit_score"
+        android:title="Spielstand ändern"
+        android:icon="@drawable/ic_pencil_black_24dp" />
+    
+</menu>

@@ -1,0 +1,97 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*" >
+        <TableRow
+            android:gravity="center">
+            <TextView
+                android:id="@+id/scoreNameI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spieler A"
+                android:textSize="20dp"
+                android:gravity="center"/>
+            <NumberPicker
+                android:textSize="20dp"
+                android:id="@+id/gamesI0_in"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <NumberPicker
+                android:enabled="false"
+                android:textSize="20dp"
+                android:id="@+id/gamesI1_in"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <NumberPicker
+                android:textSize="20dp"
+                android:id="@+id/scoreI_in"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/serveI_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+        <TableRow
+            android:gravity="center">
+            <TextView
+                android:id="@+id/scoreNameJ"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spieler B"
+                android:gravity="center"/>
+            <NumberPicker
+                android:enabled="false"
+                android:textSize="20dp"
+                android:id="@+id/gamesJ0_in"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <NumberPicker
+                android:textSize="20dp"
+                android:id="@+id/gamesJ1_in"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <NumberPicker
+                android:textSize="20dp"
+                android:id="@+id/scoreJ_in"
+                android:layout_marginLeft="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/serveJ_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </TableRow>
+    </TableLayout>
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/scoreCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Abbrechen"
+            android:textSize="20dp" />
+        <Button
+            android:id="@+id/scoreOk"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="OK"
+            android:textSize="20dp" />
+    </LinearLayout>
+</LinearLayout>
