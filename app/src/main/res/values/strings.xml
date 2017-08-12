@@ -3,5 +3,47 @@
 
     <string name="app_name">Richard</string>
     <string name="hello_world">Hello world!</string>
+    <string name="sql_create_database">
+CREATE TABLE matches (
+    match_id NOT NULL INTEGER,
+    match_player1 TEXT,
+    match_player2 TEXT,
+    match_winner NOT NULL INTEGER,
+    match_p1 NOT NULL REAL,
+    match_p2 NOT NULL REAL,
+    PRIMARY KEY (match_id)
+);
+CREATE TABLE sets (
+    set_match NOT NULL INTEGER,
+    set_nr NOT NULL INTEGER,
+    set_winner NOT NULL INTEGER,
+    set_isTiebreak NOT NULL INTEGER,
+    PRIMARY KEY (set_match, set_nr),
+    FOREIGN KEY (set_match) REFERENCES matches (match_id)
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+CREATE TABLE games (
+    game_match NOT NULL INTEGER,
+    game_set NOT NULL INTEGER,
+    game_nr NOT NULL INTEGER,
+    game_winner NOT NULL INTEGER,
+    game_isTiebreak NOT NULL INTEGER,
+    PRIMARY KEY (game_match, game_set, game_nr),
+    FOREIGN KEY (game_match, game_set) REFERENCES sets (set_match, set_nr) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+CREATE TABLE points (
+    point_match NOT NULL INTEGER,
+    point_set NOT NULL INTEGER,
+    point_game NOT NULL INTEGER,
+    point_nr NOT NULL INTEGER,
+    point_winner NOT NULL INTEGER,
+    point_server NOT NULL INTEGER
+    PRIMARY KEY (point_match, point_set, point_game, point_nr),
+    FOREIGN KEY (point_match, point_set, point_game) REFERENCES games (game_match, game_set, game_nr) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+    </string>
+
 
 </resources>

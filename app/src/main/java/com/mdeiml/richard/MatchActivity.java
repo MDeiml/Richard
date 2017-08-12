@@ -124,7 +124,7 @@ public class MatchActivity extends AppCompatActivity {
             serveJ.setVisibility(View.VISIBLE);
             serveI.setVisibility(View.INVISIBLE);
         }
-        history.add(new HistoryEntry(match.getScore(), (float)p, (float)imp));
+        history.add(match.getHistoryEntry());
         diagramm.addValue((float)p);
     }
 

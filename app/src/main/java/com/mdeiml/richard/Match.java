@@ -7,11 +7,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 
 public class Match implements Serializable {
-    
-    private byte scoreI;
-    private byte scoreJ;
-    private byte[] gamesI;
-    private byte[] gamesJ;
+
+    private Score s;
     
     private int currentSet;
     private int setScoreI;
@@ -20,10 +17,7 @@ public class Match implements Serializable {
     private boolean winI;
     private boolean winJ;
     
-    private boolean servePoint;
     private boolean serveGame;
-    
-    private boolean deuce;
     
     private RealMatrix matGI;
     private RealMatrix matGJ;
@@ -34,14 +28,17 @@ public class Match implements Serializable {
     private RealMatrix matSI;
     private RealMatrix matSJ;
     private RealMatrix matM;
+
+    private double winProbI;
+    private double importance;
+
+    private double pi;
+    private double pj;
     
     private Match() {}
     
     public Match(double pi, double pj) {
-        scoreI = 0;
-        scoreJ = 0;
-        gamesI = new byte[] {0,0,0};
-        gamesJ = new byte[] {0,0,0};
+        s = new Score(0, 0, new byte[] {0, 0, 0}, new byte[] {0, 0, 0}, true, false);
         
         currentSet = 0;
         setScoreI = 0;
@@ -50,37 +47,35 @@ public class Match implements Serializable {
         winI = false;
         winJ = false;
         
-        servePoint = true;
         serveGame = true;
         
-        deuce = false;
         updateProb(pi, pj);
+
+        winProbI = -1;
+        importance = -1;
     }
     
     public Score getScore() {
-        return new Score(scoreI, scoreJ, gamesI.clone(), gamesJ.clone(), servePoint, deuce);
+        return s;
     }
     
     public void setScore(Score s) {
-        scoreI = s.scoreI;
-        scoreJ = s.scoreJ;
-        gamesI = s.gamesI;
-        gamesJ = s.gamesJ;
+        this.s = s;
         currentSet = 0;
-        for(int i = 0; i < gamesI.length; i++) {
-            if(gamesI[i] != 0 || gamesJ[i] != 0) {
+        for(int i = 0; i < s.gamesI.length; i++) {
+            if(s.gamesI[i] != 0 || s.gamesJ[i] != 0) {
                 currentSet = i;
             }
         }
-        int gi = gamesI[currentSet];
-        int gj = gamesJ[currentSet];
+        int gi = s.gamesI[currentSet];
+        int gj = s.gamesJ[currentSet];
         if(gi == 7 || gj == 7 || ((gi == 6 || gj == 6) && Math.abs(gi - gj) >= 2)) {
             currentSet++;
         }
         setScoreI = 0;
         setScoreJ = 0;
         for(int i = 0; i < currentSet; i++) {
-            if(setScoreI > setScoreJ) {
+            if(s.gamesI[i] > s.gamesJ[i]) {
                 setScoreI++;
             }else {
                 setScoreJ++;
@@ -96,15 +91,15 @@ public class Match implements Serializable {
             winJ = true;
         }
         
-        servePoint = s.serveI;
-        if(currentSet == 2 || (gamesI[currentSet] == 6 && gamesJ[currentSet] == 6)) {
-            int serve = (scoreI + scoreJ) % 4;
-            serveGame = servePoint == (serve == 0 || serve == 3);
+        if(currentSet == 2 || (s.gamesI[currentSet] == 6 && s.gamesJ[currentSet] == 6)) {
+            int serve = (s.scoreI + s.scoreJ) % 4;
+            serveGame = s.serveI == (serve == 0 || serve == 3);
         }else {
-            serveGame = servePoint;
+            serveGame = s.serveI;
         }
-        
-        deuce = s.deuce;
+
+        winProbI = -1;
+        importance = -1;
     }
     
     public void updateProb(double pi, double pj) {
@@ -117,60 +112,54 @@ public class Match implements Serializable {
         matSI = MarkovMatrix.getSetPropabilities(matGI.getEntry(0, 0), matGJ.getEntry(0, 0), matTI.getEntry(0, 0));
         matSJ = MarkovMatrix.getSetPropabilities(matGJ.getEntry(0, 0), matGI.getEntry(0, 0), matTI.getEntry(0, 0));
         matM = MarkovMatrix.getMatchPropabilities(matSI.getEntry(0, 0), matMTI.getEntry(0, 0));
+        this.pi = pi;
+        this.pj = pj;
     }
 
     public void setServePoint(boolean servePoint) {
-        this.servePoint = servePoint;
+        setScore(new Score(s.scoreI, s.scoreJ, s.gamesI, s.gamesJ, servePoint, s.deuce));
     }
 
     public boolean isServePoint() {
-        return servePoint;
+        return s.serveI;
     }
 
     public void setGamesJ(byte[] gamesJ) {
-        this.gamesJ = gamesJ;
+       setScore(new Score(s.scoreI, s.scoreJ, s.gamesI, gamesJ, s.serveI, s.deuce));
     }
 
     public byte[] getGamesJ() {
-        return gamesJ;
+        return s.gamesJ.clone();
     }
 
     public void setGamesI(byte[] gamesI) {
-        this.gamesI = gamesI;
+        setScore(new Score(s.scoreI, s.scoreJ, gamesI, s.gamesJ, s.serveI, s.deuce));
     }
 
     public byte[] getGamesI() {
-        return gamesI;
-    }
-
-    public void setCurrentSet(int currentSet) {
-        this.currentSet = currentSet;
-    }
-
-    public int getCurrentSet() {
-        return currentSet;
+        return s.gamesI.clone();
     }
 
     public void setScoreJ(byte scoreJ) {
-        this.scoreJ = scoreJ;
+        setScore(new Score(s.scoreI, scoreJ, s.gamesI, s.gamesJ, s.serveI, s.deuce));
     }
 
     public int getScoreJ() {
-        return scoreJ;
+        return s.scoreJ;
     }
     
     public String getScoreJS() {
-        if(gamesI[currentSet] == 6 && gamesJ[currentSet] == 6 || currentSet == 2) {
-            return scoreJ+"";
+        if(s.gamesI[currentSet] == 6 && s.gamesJ[currentSet] == 6 || currentSet == 2) {
+            return s.scoreJ+"";
         }else {
-            if(deuce) {
-                if(scoreJ == 3) {
+            if(s.deuce) {
+                if(s.scoreJ == 3) {
                     return "A";
                 }else {
                     return "40";
                 }
             }else {
-                switch(scoreJ) {
+                switch(s.scoreJ) {
                     case 0:
                     default:
                         return "0";
@@ -186,25 +175,25 @@ public class Match implements Serializable {
     }
 
     public void setScoreI(byte scoreI) {
-        this.scoreI = scoreI;
+        setScore(new Score(scoreI, s.scoreJ, s.gamesI, s.gamesJ, s.serveI, s.deuce));
     }
 
     public int getScoreI() {
-        return scoreI;
+        return s.scoreI;
     }
 
     public String getScoreIS() {
-        if(gamesI[currentSet] == 6 && gamesJ[currentSet] == 6 || currentSet == 2) {
-            return scoreI+"";
+        if(s.gamesI[currentSet] == 6 && s.gamesJ[currentSet] == 6 || currentSet == 2) {
+            return s.scoreI+"";
         }else {
-            if(deuce) {
-                if(scoreI == 3) {
+            if(s.deuce) {
+                if(s.scoreI == 3) {
                     return "A";
                 }else {
                     return "40";
                 }
             }else {
-                switch(scoreI) {
+                switch(s.scoreI) {
                     case 0:
                     default:
                         return "0";
@@ -218,8 +207,32 @@ public class Match implements Serializable {
             }
         }
     }
+
+    public int getCurrentSet() {
+        return currentSet;
+    }
+
+    public int getWinner() {
+        if(winI) {
+            return 1;
+        }else if(winJ) {
+            return 2;
+        }else {
+            return 0;
+        }
+    }
+
+    public double[] getProbs() {
+        return new double[] {pi, pj};
+    }
     
     public void point(boolean pointI) {
+        byte scoreI = s.scoreI;
+        byte scoreJ = s.scoreJ;
+        byte[] gamesI = s.gamesI.clone();
+        byte[] gamesJ = s.gamesJ.clone();
+        boolean servePoint = s.serveI;
+        boolean deuce = s.deuce;
         if(winI || winJ) {
             return;
         }
@@ -303,18 +316,24 @@ public class Match implements Serializable {
                 }
             }
         }
+        s = new Score(scoreI, scoreJ, gamesI, gamesJ, servePoint, deuce);
+        winProbI = -1;
+        importance = -1;
     }
     
     public double winProbI() {
+        if(winProbI > 0) {
+            return winProbI;
+        }
         if(winI) {
-            return 1;
+            winProbI = 1;
         }else if (winJ) {
-            return 0;
+            winProbI = 0;
         }
         if(currentSet == 2) { // match tiebrak
             RealMatrix mti = serveGame ? matMTI : matMTJ;
-            int si = serveGame ? scoreI : scoreJ;
-            int sj = serveGame ? scoreJ : scoreI;
+            int si = serveGame ? s.scoreI : s.scoreJ;
+            int sj = serveGame ? s.scoreJ : s.scoreI;
             if(si > 10) si = 9 + (si-1) % 2;
             if(sj > 10) si = 9 + (sj-1) % 2;
             if(si == 10 && sj == 10) {
@@ -333,15 +352,15 @@ public class Match implements Serializable {
             }
             double p = mti.getEntry(index, 0);
             if(!serveGame) p = 1-p;
-            return p;
-        }else if(gamesI[currentSet] == 6 && gamesJ[currentSet] == 6) { // set tiebreak
+            winProbI = p;
+        }else if(s.gamesI[currentSet] == 6 && s.gamesJ[currentSet] == 6) { // set tiebreak
             RealMatrix mti = serveGame ? matTI : matTJ;
             double ti = mti.getEntry(0, 0);
             ti = serveGame ? ti : 1-ti;
             RealMatrix mmi = matM;
             
-            int si = serveGame ? scoreI : scoreJ;
-            int sj = serveGame ? scoreJ : scoreI;
+            int si = serveGame ? s.scoreI : s.scoreJ;
+            int sj = serveGame ? s.scoreJ : s.scoreI;
             if(si > 7) si = 6 + si % 2;
             if(sj > 7) si = 6 + sj % 2;
             if(si == 7 && sj == 7) {
@@ -364,24 +383,24 @@ public class Match implements Serializable {
             }
             double pwinI = setScoreI == 1 ? 1 : mmi.getEntry(MarkovMatrix.getMatchMatrixIndex(setScoreI+1, setScoreJ), 0);
             double pwinJ = setScoreJ == 1 ? 0 : mmi.getEntry(MarkovMatrix.getMatchMatrixIndex(setScoreI, setScoreJ+1), 0);
-            return pt * pwinI + (1-pt) * pwinJ;
+            winProbI = pt * pwinI + (1-pt) * pwinJ;
         }else { // standard game
             RealMatrix mgi = matGI;
             RealMatrix mgj = matGJ;
-            int serve = (gamesI[currentSet] + gamesJ[currentSet]) % 2;
+            int serve = (s.gamesI[currentSet] + s.gamesJ[currentSet]) % 2;
             boolean serveFirstGame = (serve == 0) == serveGame;
             RealMatrix msi = serveFirstGame ? matSI : matSJ;
             RealMatrix mmi = matM;
             
-            int si = serveGame ? scoreI : scoreJ;
-            int sj = serveGame ? scoreJ : scoreI;
+            int si = serveGame ? s.scoreI : s.scoreJ;
+            int sj = serveGame ? s.scoreJ : s.scoreI;
             int index = si*4+sj;
             double pg = (serveGame ? mgi : mgj).getEntry(index, 0);
             if(!serveGame) {
                 pg = 1-pg;
             }
-            int ssi = serveFirstGame ? gamesI[currentSet] : gamesJ[currentSet];
-            int ssj = serveFirstGame ? gamesJ[currentSet] : gamesI[currentSet];
+            int ssi = serveFirstGame ? s.gamesI[currentSet] : s.gamesJ[currentSet];
+            int ssj = serveFirstGame ? s.gamesJ[currentSet] : s.gamesI[currentSet];
             double pwinI = ssi == 6 || (ssi == 5 && ssj < 5) ? 1 : msi.getEntry(MarkovMatrix.getSetMatrixIndex(ssi+1, ssj), 0);
             double pwinJ = ssj == 6 || (ssj == 5 && ssi < 5) ? 0 : msi.getEntry(MarkovMatrix.getSetMatrixIndex(ssi, ssj+1), 0);
             if(!serveFirstGame) {
@@ -392,26 +411,28 @@ public class Match implements Serializable {
             double ps = pg * pwinI + (1-pg) * pwinJ;
             pwinI = setScoreI == 1 ? 1 : mmi.getEntry(MarkovMatrix.getMatchMatrixIndex(setScoreI+1, setScoreJ), 0);
             pwinJ = setScoreJ == 1 ? 0 : mmi.getEntry(MarkovMatrix.getMatchMatrixIndex(setScoreI, setScoreJ+1), 0);
-            return ps * pwinI + (1-ps) * pwinJ;
+            winProbI = ps * pwinI + (1-ps) * pwinJ;
         }
+        return winProbI;
     }
     
     public double importance() {
+        if(importance > 0) {
+            return importance;
+        }
         Match m1 = cloneMatch();
         Match m2 = cloneMatch();
         m1.point(true);
         m2.point(false);
         double p1 = m1.winProbI();
         double p2 = m2.winProbI();
-        return p1 - p2;
+        importance = p1 - p2;
+        return importance;
     }
     
     public Match cloneMatch() {
         Match m = new Match();
-        m.scoreI = scoreI;
-        m.scoreJ = scoreJ;
-        m.gamesI = gamesI.clone();
-        m.gamesJ = gamesJ.clone();
+        m.s = s;
         
         m.currentSet = currentSet;
         m.setScoreI = setScoreI;
@@ -420,10 +441,7 @@ public class Match implements Serializable {
         m.winI = winI;
         m.winJ = winJ;
         
-        m.servePoint = servePoint;
         m.serveGame = serveGame;
-        
-        m.deuce = deuce;
         
         m.matGI = matGI;
         m.matGJ = matGJ;
@@ -435,5 +453,9 @@ public class Match implements Serializable {
         m.matSJ = matSJ;
         m.matM = matM;
         return m;
+    }
+
+    public HistoryEntry getHistoryEntry() {
+        return new HistoryEntry(getScore(), (float)winProbI(), (float)importance());
     }
 }
