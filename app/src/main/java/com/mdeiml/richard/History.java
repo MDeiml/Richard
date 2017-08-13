@@ -29,10 +29,18 @@ public class History {
     public History(String player1, String player2, double p1, double p2) {
         this.player1 = player1;
         this.player2 = player2;
-        this.p1 = p1;
-        this.p2 = p2;
         this.winner = 0;
         this.sets = new ArrayList<>();
+        sets.add(new Set(NO_TIEBREAK, (byte)1));
+        updateProb(p1, p2);
+    }
+
+    public int getCurrentSetNr() {
+        return sets.size()-1;
+    }
+
+    public boolean servePoint() {
+        return getCurrentSet().getCurrentGame().getCurrentPoint().server == 1;
     }
 
     public double getP1() {
@@ -41,6 +49,14 @@ public class History {
 
     public double getP2() {
         return p2;
+    }
+
+    public byte[][] getGames() {
+        byte[][] res = new byte[sets.size()][];
+        for(int i = 0; i < sets.size(); i++) {
+            res[i] = sets.get(i).totalGames();
+        }
+        return res;
     }
     
     public void updateProb(double p1, double p2) {
@@ -99,9 +115,22 @@ public class History {
                 server = server == 1 ? (byte)2 : (byte)1;
                 sets.add(new Set(t ? MATCH_TIEBREAK : NO_TIEBREAK, server));
             }
-            return getWinner();
+            return w1;
         }
         return 0;
+    }
+
+    public boolean removePoint() {
+        if(getCurrentSet().getCurrentGame().getCurrentPoint() == sets.get(0).games.get(0).points.get(0)) {
+            return false;
+        }
+        if(getCurrentSet().removePoint()) {
+            sets.remove(sets.size()-1);
+            getCurrentSet().getCurrentGame().getCurrentPoint().winner = 0;
+            getCurrentSet().getCurrentGame().winner = 0;
+            getCurrentSet().winner = 0;
+        }
+        return true;
     }
 
     public double getWinProb() {
@@ -119,6 +148,19 @@ public class History {
             double ps = getCurrentSet().getWinProb(matG1, matG2, matT1, matT2, matMT1, matMT2, matS1, matS2);
             return ps * pm1 + (1 - ps) * pm2;
         }
+    }
+
+    public double importance() {
+        if(winner != 0) {
+            return 0;
+        }
+        point((byte)1);
+        double p1 = getWinProb();
+        removePoint();
+        point((byte)2);
+        double p2 = getWinProb();
+        removePoint();
+        return p1 - p2;
     }
 
     public static class Set {
@@ -184,9 +226,23 @@ public class History {
                     server = server == 1 ? (byte)2 : (byte)1;
                     games.add(new Game(t ? SET_TIEBREAK : NO_TIEBREAK, server));
                 }
-                return getWinner();
+                return w1;
             }
             return 0;
+        }
+
+        public boolean removePoint() {
+            if(getCurrentGame().removePoint()) {
+                games.remove(games.size()-1);
+                if(games.isEmpty()) {
+                    return true;
+                }else {
+                    getCurrentGame().getCurrentPoint().winner = 0;
+                    getCurrentGame().winner = 0;
+                    return false;
+                }
+            }
+            return false;
         }
 
         public double getWinProb(RealMatrix mg1, RealMatrix mg2, RealMatrix mt1, RealMatrix mt2, RealMatrix mmt1, RealMatrix mmt2, RealMatrix ms1, RealMatrix ms2) {
@@ -196,17 +252,21 @@ public class History {
             }else if(w == 2) {
                 return 2;
             }else {
-                byte server = games.get(0).points.get(0).server;
-                RealMatrix ms = server == 1 ? ms1 : ms2;
-                byte[] totalGames = totalGames();
-                byte si = totalGames[server-1];
-                byte sj = totalGames[server%2];
-                double psi = (si == 6 || (si == 5 && sj < 5)) ? 1 : ms.getEntry(MarkovMatrix.getSetMatrixIndex(si+1, sj), 0);
-                double psj = (sj == 6 || (sj == 5 && si < 5)) ? 0 : ms.getEntry(MarkovMatrix.getSetMatrixIndex(si, sj+1), 0);
-                double ps1 = server == 1 ? psi : 1 - psj;
-                double ps2 = server == 1 ? psj : 1 - psi;
-                double pg = getCurrentGame().getWinProb(mg1, mg2, mt1, mt2, mmt1, mmt2);
-                return pg * ps1 + (1 - pg) * ps2;
+                if(tiebreak == MATCH_TIEBREAK) {
+                    return getCurrentGame().getWinProb(mg1, mg2, mt1, mt2, mmt1, mmt2);
+                }else {
+                    byte server = games.get(0).points.get(0).server;
+                    RealMatrix ms = server == 1 ? ms1 : ms2;
+                    byte[] totalGames = totalGames();
+                    byte si = totalGames[server-1];
+                    byte sj = totalGames[server%2];
+                    double psi = (si == 6 || (si == 5 && sj < 5)) ? 1 : ms.getEntry(MarkovMatrix.getSetMatrixIndex(si+1, sj), 0);
+                    double psj = (sj == 6 || (sj == 5 && si < 5)) ? 0 : ms.getEntry(MarkovMatrix.getSetMatrixIndex(si, sj+1), 0);
+                    double ps1 = server == 1 ? psi : 1 - psj;
+                    double ps2 = server == 1 ? psj : 1 - psi;
+                    double pg = getCurrentGame().getWinProb(mg1, mg2, mt1, mt2, mmt1, mmt2);
+                    return pg * ps1 + (1 - pg) * ps2;
+                }
             }
         }
 
@@ -240,7 +300,7 @@ public class History {
                 byte minWinPoints = 4;
                 if(tiebreak == SET_TIEBREAK) {
                     minWinPoints = 7;
-                }else if(tiebreak == SET_TIEBREAK) {
+                }else if(tiebreak == MATCH_TIEBREAK) {
                     minWinPoints = 10;
                 }
                 if(totalPoints[0] >= minWinPoints || totalPoints[1] >= minWinPoints) {
@@ -274,8 +334,21 @@ public class History {
             if(tiebreak != NO_TIEBREAK && (totalPoints[0] + totalPoints[1]) % 2 == 1) {
                 server = server == 1 ? (byte)2 : (byte)1;
             }
-            points.add(new Point(server));
-            return getWinner();
+            byte w = getWinner();
+            if(w == 0) {
+                points.add(new Point(server));
+            }
+            return w;
+        }
+
+        public boolean removePoint() {
+            points.remove(points.size()-1);
+            if(points.isEmpty()) {
+                return true;
+            }else {
+                getCurrentPoint().winner = 0;
+                return false;
+            }
         }
 
         public double getWinProb(RealMatrix mg1, RealMatrix mg2, RealMatrix mt1, RealMatrix mt2, RealMatrix mmt1, RealMatrix mmt2) {
@@ -289,39 +362,85 @@ public class History {
                 byte[] totalPoints = totalPoints();
                 byte si = totalPoints[server-1];
                 byte sj = totalPoints[server%2];
-                byte minWinPoints = 4;
                 RealMatrix mg = server == 1 ? mg1 : mg2;
                 if(tiebreak == SET_TIEBREAK) {
-                    minWinPoints = 7;
                     mg = server == 1 ? mt1 : mt2;
                 }else if(tiebreak == MATCH_TIEBREAK) {
-                    minWinPoints = 10;
                     mg = server == 1 ? mmt1 : mmt2;
                 }
                 int index;
                 if(tiebreak == NO_TIEBREAK) {
-                    if(si >= minWinPoints || sj >= minWinPoints) {
+                    if(si >= 3 && sj >= 3) {
                         byte smax = (byte)Math.max(si, sj);
-                        si = (byte)(si - smax + minWinPoints - 1);
-                        sj = (byte)(sj - smax + minWinPoints - 1);
+                        si = (byte)(si - smax + 2);
+                        sj = (byte)(sj - smax + 2);
                     }
-                    index = si * minWinPoints + sj;
-                }else {
-                    if(si >= minWinPoints && sj >= minWinPoints) {
-                        byte smax = (byte)Math.max(si, sj);
-                        si = (byte)(si - smax + minWinPoints - 1);
-                        sj = (byte)(sj - smax + minWinPoints - 1);
+                    index = si * 4 + sj;
+                }else if(tiebreak == SET_TIEBREAK) {
+                    if(si >= 7 && sj >= 7) {
+                        if(si % 2 == 1 && sj == si - 1) {
+                            si = (byte)7;
+                            sj = (byte)6;
+                        }else if(si == sj - 1 && sj % 2 == 1) {
+                            si = (byte)6;
+                            sj = (byte)7;
+                        }else {
+                            si = (byte)(5 + (si+1) % 2);
+                            sj = (byte)(5 + (sj+1) % 2);
+                        }
                     }
-                    if(si == minWinPoints) {
-                        index = minWinPoints * minWinPoints + 1;
-                    }else if(sj == minWinPoints) {
-                        index = minWinPoints * minWinPoints;
+                    if(si < 7 && sj < 7) {
+                        index = si*7+sj;
                     }else {
-                        index = si * minWinPoints + sj;
+                        if(si == 7) { // 7-6
+                            index = 50;
+                        }else {
+                            index = 49;
+                        }
+                    }
+                // }else if(tiebreak == MATCH_TIEBREAK) {
+                }else {
+                    if(si >= 10 && sj >= 10) {
+                        if(si % 2 == 0 && sj == si - 1) {
+                            si = (byte)10;
+                            sj = (byte)9;
+                        }else if(si == sj - 1 && sj % 2 == 0) {
+                            si = (byte)9;
+                            sj = (byte)10;
+                        }else {
+                            si = (byte)(8 + si % 2);
+                            sj = (byte)(8 + sj % 2);
+                        }
+                    }
+                    if(si < 10 && sj < 10) {
+                        index = si*10+sj;
+                    }else {
+                        if(si == 10) { // 10-9
+                            index = 101;
+                        }else {
+                            index = 100;
+                        }
                     }
                 }
                 double pgi = mg.getEntry(index, 0);
                 return server == 1 ? pgi : 1-pgi;
+            }
+        }
+
+        public String[] stringScores() {
+            byte[] totalPoints = totalPoints();
+            if(tiebreak == NO_TIEBREAK) {
+                boolean deuce = false;
+                if(totalPoints[0] >= 4 && totalPoints[1] >= 4) {
+                    byte pointsMax = (byte)Math.max(totalPoints[0], totalPoints[1]);
+                    totalPoints[0] += 3 - pointsMax;
+                    totalPoints[1] += 3 - pointsMax;
+                    deuce = true;
+                }
+                String[] lookup = new String[] {"0", "15", "30", "40", "A"};
+                return new String[] {lookup[totalPoints[0]], lookup[totalPoints[1]]};
+            }else {
+                return new String[] {totalPoints[0]+"", totalPoints[1]+""};
             }
         }
 

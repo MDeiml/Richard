@@ -16,7 +16,8 @@ import java.util.ArrayList;
 
 public class MatchActivity extends AppCompatActivity {
     
-    private Match match;
+    // private Match match;
+    private History match;
     private Button buttonI;
     private Button buttonJ;
     private TextView propI;
@@ -57,13 +58,15 @@ public class MatchActivity extends AppCompatActivity {
         diagramm = (DiagrammView)findViewById(R.id.diagramm);
         buttonI.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                match.point(true);
+                // match.point(true);
+                match.point((byte)1);
                 updateProbs();
             }
         });
         buttonJ.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                match.point(false);
+                // match.point(false);
+                match.point((byte)2); 
                 updateProbs();
             }
         });
@@ -84,9 +87,10 @@ public class MatchActivity extends AppCompatActivity {
         pj = p[1];
         
         if(savedInstanceState != null && savedInstanceState.containsKey("match")) {
-            match = (Match)savedInstanceState.getSerializable("match");
+            // match = (Match)savedInstanceState.getSerializable("match");
         }else {
-            match = new Match(pi, pj);
+            // match = new Match(pi, pj);
+            match = new History(nameI, nameJ, pi, pj);
         }
         if(savedInstanceState != null && savedInstanceState.containsKey("history")) {
             history = (ArrayList<HistoryEntry>)savedInstanceState.getSerializable("history");
@@ -97,41 +101,46 @@ public class MatchActivity extends AppCompatActivity {
     }
     
     public void updateProbs() {
-        double p = match.winProbI();
+        //double p = match.winProbI();
+        double imp = match.importance();
+        double p = match.getWinProb();
         double piP = p*100;
         double pjP = 100-piP;
         propI.setText(String.format("%.1f", piP)+"%");
         propJ.setText(String.format("%.1f", pjP)+"%");
-        pointsI.setText(match.getScoreIS());
-        pointsJ.setText(match.getScoreJS());
-        if(match.getCurrentSet() == 0) {
+        String[] stringScores = match.getCurrentSet().getCurrentGame().stringScores();
+        pointsI.setText(stringScores[0]);
+        pointsJ.setText(stringScores[1]);
+        if(match.getCurrentSetNr() == 0) {
             set1.setVisibility(View.INVISIBLE);
         }else {
             set1.setVisibility(View.VISIBLE);
         }
-        byte[] gamesI = match.getGamesI();
-        byte[] gamesJ = match.getGamesJ();
-        gamesI0.setText(gamesI[0]+"");
-        gamesJ0.setText(gamesJ[0]+"");
-        gamesI1.setText(gamesI[1]+"");
-        gamesJ1.setText(gamesJ[1]+"");
-        double imp = match.importance();
+        // byte[] gamesI = match.getGamesI();
+        // byte[] gamesJ = match.getGamesJ();
+        byte[][] games = match.getGames();
+        gamesI0.setText(games[0][0]+"");
+        gamesJ0.setText(games[0][1]+"");
+        if(games.length >= 2) {
+            gamesI1.setText(games[1][0]+"");
+            gamesJ1.setText(games[1][1]+"");
+        }
         importance.setText(String.format("%.1f", imp*100)+"%");
-        if(match.isServePoint()) {
+        if(match.servePoint()) {
             serveI.setVisibility(View.VISIBLE);
             serveJ.setVisibility(View.INVISIBLE);
         }else {
             serveJ.setVisibility(View.VISIBLE);
             serveI.setVisibility(View.INVISIBLE);
         }
-        history.add(match.getHistoryEntry());
+        //history.add(match.getHistoryEntry());
         diagramm.addValue((float)p);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("match", match);
+        // outState.putSerializable("match", match);
         outState.putSerializable("history", history);
     }
 
@@ -161,7 +170,7 @@ public class MatchActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK) {
             Score s = (Score)data.getSerializableExtra("score");
             history.clear();
-            match.setScore(s);
+            // match.setScore(s);
             diagramm.clear();
             updateProbs();
         }
