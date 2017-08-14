@@ -9,7 +9,9 @@ public class History {
     public static final byte SET_TIEBREAK = 1;
     public static final byte MATCH_TIEBREAK = 2;
 
-    private byte winner;
+    public long matchId;
+
+    public byte winner;
     public final ArrayList<Set> sets;
     public final String player1;
     public final String player2;
@@ -27,10 +29,15 @@ public class History {
     private RealMatrix matM;
 
     public History(String player1, String player2, double p1, double p2) {
+        this(player1, player2, p1, p2, -1);
+    }
+
+    public History(String player1, String player2, double p1, double p2, long matchId) {
         this.player1 = player1;
         this.player2 = player2;
         this.winner = 0;
         this.sets = new ArrayList<>();
+        this.matchId = matchId;
         sets.add(new Set(NO_TIEBREAK, (byte)1));
         updateProb(p1, p2);
     }
@@ -165,7 +172,7 @@ public class History {
 
     public static class Set {
 
-        private byte winner;
+        public byte winner;
         public final ArrayList<Game> games;
         public final byte tiebreak;
 
@@ -178,6 +185,12 @@ public class History {
             }else {
                 games.add(new Game(NO_TIEBREAK, server));
             }
+        }
+
+        public Set(byte tiebreak) {
+            this.tiebreak = tiebreak;
+            this.winner = 0;
+            this.games = new ArrayList<>();
         }
 
         public Game getCurrentGame() {
@@ -274,7 +287,7 @@ public class History {
 
     public static class Game {
 
-        private byte winner;
+        public byte winner;
         public final ArrayList<Point> points;
         public final byte tiebreak;
 
@@ -283,6 +296,12 @@ public class History {
             this.points = new ArrayList<>();
             this.tiebreak = tiebreak;
             points.add(new Point(server));
+        }
+
+        public Game(byte tiebreak) {
+            this.winner = 0;
+            this.points = new ArrayList<>();
+            this.tiebreak = tiebreak;
         }
 
         public Point getCurrentPoint() {

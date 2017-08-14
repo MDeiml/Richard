@@ -13,10 +13,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import java.util.ArrayList;
+import android.util.Log;
 
 public class MatchActivity extends AppCompatActivity {
     
     // private Match match;
+    private SavedMatchesDbHelper dbHelper;
     private History match;
     private Button buttonI;
     private Button buttonJ;
@@ -41,6 +43,7 @@ public class MatchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match);
+        dbHelper = new SavedMatchesDbHelper(this);
         buttonI = (Button)findViewById(R.id.buttonI);
         buttonJ = (Button)findViewById(R.id.buttonJ);
         propI = (TextView)findViewById(R.id.propI);
@@ -58,14 +61,12 @@ public class MatchActivity extends AppCompatActivity {
         diagramm = (DiagrammView)findViewById(R.id.diagramm);
         buttonI.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                // match.point(true);
                 match.point((byte)1);
                 updateProbs();
             }
         });
         buttonJ.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                // match.point(false);
                 match.point((byte)2); 
                 updateProbs();
             }
@@ -87,9 +88,9 @@ public class MatchActivity extends AppCompatActivity {
         pj = p[1];
         
         if(savedInstanceState != null && savedInstanceState.containsKey("match")) {
+            match = dbHelper.loadMatch(savedInstanceState.getLong("match"));
             // match = (Match)savedInstanceState.getSerializable("match");
         }else {
-            // match = new Match(pi, pj);
             match = new History(nameI, nameJ, pi, pj);
         }
         if(savedInstanceState != null && savedInstanceState.containsKey("history")) {
@@ -101,7 +102,6 @@ public class MatchActivity extends AppCompatActivity {
     }
     
     public void updateProbs() {
-        //double p = match.winProbI();
         double imp = match.importance();
         double p = match.getWinProb();
         double piP = p*100;
@@ -141,6 +141,9 @@ public class MatchActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // outState.putSerializable("match", match);
+        Log.i("MatchActivity", "Match saved");
+        dbHelper.saveMatch(match);
+        outState.putLong("match", match.matchId);
         outState.putSerializable("history", history);
     }
 

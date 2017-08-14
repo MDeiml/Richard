@@ -17,7 +17,7 @@ CREATE TABLE sets (
     set_match NOT NULL INTEGER,
     set_nr NOT NULL INTEGER,
     set_winner NOT NULL INTEGER,
-    set_isTiebreak NOT NULL INTEGER,
+    set_tiebreak NOT NULL INTEGER,
     PRIMARY KEY (set_match, set_nr),
     FOREIGN KEY (set_match) REFERENCES matches (match_id)
         ON DELETE CASCADE ON UPDATE NO ACTION
@@ -27,7 +27,7 @@ CREATE TABLE games (
     game_set NOT NULL INTEGER,
     game_nr NOT NULL INTEGER,
     game_winner NOT NULL INTEGER,
-    game_isTiebreak NOT NULL INTEGER,
+    game_tiebreak NOT NULL INTEGER,
     PRIMARY KEY (game_match, game_set, game_nr),
     FOREIGN KEY (game_match, game_set) REFERENCES sets (set_match, set_nr) 
         ON DELETE CASCADE ON UPDATE NO ACTION
