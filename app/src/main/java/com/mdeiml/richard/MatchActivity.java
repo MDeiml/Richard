@@ -19,7 +19,7 @@ public class MatchActivity extends AppCompatActivity {
     
     // private Match match;
     private SavedMatchesDbHelper dbHelper;
-    private History match;
+    private Match match;
     private Button buttonI;
     private Button buttonJ;
     private TextView propI;
@@ -92,7 +92,7 @@ public class MatchActivity extends AppCompatActivity {
             double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5));
             pi = p[0];
             pj = p[1];
-            match = new History(nameI, nameJ, pi, pj);
+            match = new Match(nameI, nameJ, pi, pj);
         }
         nameI = nameI.isEmpty() ? "Spieler A" : nameI;
         nameJ = nameJ.isEmpty() ? "Spieler B" : nameJ;

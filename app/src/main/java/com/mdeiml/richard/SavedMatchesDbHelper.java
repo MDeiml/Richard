@@ -33,7 +33,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
 	}
 
-	public void saveMatch(History match) {
+	public void saveMatch(Match match) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues matchValues = new ContentValues();
 		if(match.matchId != -1) {
@@ -49,7 +49,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		match.matchId = matchId;
 
 		for(int i = 0; i < match.sets.size(); i++) {
-			History.Set set = match.sets.get(i);
+			Match.Set set = match.sets.get(i);
 			ContentValues setValues = new ContentValues();
 			setValues.put("set_match", matchId);
 			setValues.put("set_nr", i);
@@ -57,7 +57,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			setValues.put("set_tiebreak", set.tiebreak);
 			db.insert("sets", null, setValues);
 			for(int j = 0; j < set.games.size(); j++) {
-				History.Game game = set.games.get(j);
+				Match.Game game = set.games.get(j);
 				ContentValues gameValues = new ContentValues();
 				gameValues.put("game_match", matchId);
 				gameValues.put("game_set", i);
@@ -66,7 +66,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 				gameValues.put("game_tiebreak", game.tiebreak);
 				db.insert("games", null, gameValues);
 				for(int k = 0; k < game.points.size(); k++) {
-					History.Point point = game.points.get(k);
+					Match.Point point = game.points.get(k);
 					ContentValues pointValues = new ContentValues();
 					pointValues.put("point_match", matchId);
 					pointValues.put("point_set", i);
@@ -80,7 +80,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public History loadMatch(long matchId) {
+	public Match loadMatch(long matchId) {
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor matchCursor = db.query(
 			"matches",
@@ -93,7 +93,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		int p1Index = matchCursor.getColumnIndex("match_p1");
 		int p2Index = matchCursor.getColumnIndex("match_p2");
 		if(matchCursor.moveToNext()) {
-			History match = new History(
+			Match match = new Match(
 				matchCursor.getString(player1Index),
 				matchCursor.getString(player2Index),
 				matchCursor.getDouble(p1Index),
@@ -111,7 +111,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			int setTiebreakIndex = setCursor.getColumnIndex("set_tiebreak");
 
 			while(setCursor.moveToNext()) {
-				History.Set set = new History.Set((byte)setCursor.getInt(setTiebreakIndex));
+				Match.Set set = new Match.Set((byte)setCursor.getInt(setTiebreakIndex));
 				set.winner = (byte)setCursor.getInt(setWinnerIndex);
 				match.sets.add(set);
 			}
@@ -126,7 +126,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			int gameTiebreakIndex = gameCursor.getColumnIndex("game_tiebreak");
 
 			while(gameCursor.moveToNext()) {
-				History.Game game = new History.Game((byte)gameCursor.getInt(gameTiebreakIndex));
+				Match.Game game = new Match.Game((byte)gameCursor.getInt(gameTiebreakIndex));
 				game.winner = (byte)gameCursor.getInt(gameWinnerIndex);
 				match.sets.get(gameCursor.getInt(gameSetIndex)).games.add(game);
 			}
@@ -142,7 +142,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			int pointServerIndex = pointCursor.getColumnIndex("point_server");
 
 			while(pointCursor.moveToNext()) {
-				History.Point point = new History.Point((byte)pointCursor.getInt(pointServerIndex));
+				Match.Point point = new Match.Point((byte)pointCursor.getInt(pointServerIndex));
 				point.winner = (byte)pointCursor.getInt(pointWinnerIndex);
 				match.sets.get(pointCursor.getInt(pointSetIndex)).games.get(pointCursor.getInt(pointGameIndex)).points.add(point);
 			}
