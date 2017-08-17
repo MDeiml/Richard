@@ -1,157 +1,103 @@
 package com.mdeiml.richard;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View.OnClickListener;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import java.util.ArrayList;
-import android.util.Log;
 
 public class MatchActivity extends AppCompatActivity {
+
+    public static final String[] tabTitles = new String[]{"Match"};
     
-    // private Match match;
     private SavedMatchesDbHelper dbHelper;
     private Match match;
-    private Button buttonI;
-    private Button buttonJ;
-    private TextView propI;
-    private TextView propJ;
-    private TextView pointsI;
-    private TextView pointsJ;
-    private TextView gamesI0;
-    private TextView gamesJ0;
-    private TextView gamesI1;
-    private TextView gamesJ1;
-    private View set1;
-    private TextView importance;
-    private double pi, pj;
-    private View serveI;
-    private View serveJ;
-    private DiagrammView diagramm;
-    
-    private ArrayList<HistoryEntry> history;
+    private String player1;
+    private String player2;
+    private MatchFragment matchFragment;
+    private ViewPager pager;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match);
+
         dbHelper = new SavedMatchesDbHelper(this);
-        buttonI = (Button)findViewById(R.id.buttonI);
-        buttonJ = (Button)findViewById(R.id.buttonJ);
-        propI = (TextView)findViewById(R.id.propI);
-        propJ = (TextView)findViewById(R.id.propJ);
-        pointsI = (TextView)findViewById(R.id.pointsI);
-        pointsJ = (TextView)findViewById(R.id.pointsJ);
-        gamesI0 = (TextView)findViewById(R.id.gamesI0);
-        gamesJ0 = (TextView)findViewById(R.id.gamesJ0);
-        gamesI1 = (TextView)findViewById(R.id.gamesI1);
-        gamesJ1 = (TextView)findViewById(R.id.gamesJ1);
-        set1 = findViewById(R.id.set1);
-        importance = (TextView)findViewById(R.id.importance);
-        serveI = findViewById(R.id.serveI);
-        serveJ = findViewById(R.id.serveJ);
-        diagramm = (DiagrammView)findViewById(R.id.diagramm);
-        buttonI.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                match.point((byte)1);
-                updateProbs();
-            }
-        });
-        buttonJ.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                match.point((byte)2); 
-                updateProbs();
-            }
-        });
-        
-        String nameI;
-        String nameJ;
+
         Intent i = getIntent();
         if(savedInstanceState != null && savedInstanceState.containsKey("match")) {
             match = dbHelper.loadMatch(savedInstanceState.getLong("match"));
-            nameI = match.player1;
-            nameJ = match.player2;
         }else if(i.hasExtra("match_id")) {
             match = dbHelper.loadMatch(i.getLongExtra("match_id", 0));
-            nameI = match.player1;
-            nameJ = match.player2;
         }else {
             SharedPreferences pref = getSharedPreferences("com.mdeiml.richard", MODE_PRIVATE);
-            nameI = i.getStringExtra("nameI").trim();
-            nameJ = i.getStringExtra("nameJ").trim();
+            String nameI = i.getStringExtra("nameI").trim();
+            String nameJ = i.getStringExtra("nameJ").trim();
+            nameI = nameI.isEmpty() ? "Spieler A" : nameI;
+            nameJ = nameJ.isEmpty() ? "Spieler B" : nameJ;
 
             double pmean = pref.getFloat("pmean", 0.6f);
             double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5));
-            pi = p[0];
-            pj = p[1];
+            double pi = p[0];
+            double pj = p[1];
             match = new Match(nameI, nameJ, pi, pj);
         }
-        nameI = nameI.isEmpty() ? "Spieler A" : nameI;
-        nameJ = nameJ.isEmpty() ? "Spieler B" : nameJ;
-        buttonI.setText(nameI);
-        buttonJ.setText(nameJ);
-        diagramm.setLabels(nameI, nameJ);
-        
-        if(savedInstanceState != null && savedInstanceState.containsKey("history")) {
-            history = (ArrayList<HistoryEntry>)savedInstanceState.getSerializable("history");
-        }else {
-            history = new ArrayList<>();
-        }
-        updateProbs();
-    }
-    
-    public void updateProbs() {
-        double imp = match.importance();
-        double p = match.getWinProb();
-        double piP = p*100;
-        double pjP = 100-piP;
-        propI.setText(String.format("%.1f", piP)+"%");
-        propJ.setText(String.format("%.1f", pjP)+"%");
-        String[] stringScores = match.getCurrentSet().getCurrentGame().stringScores();
-        pointsI.setText(stringScores[0]);
-        pointsJ.setText(stringScores[1]);
-        if(match.getCurrentSetNr() == 0) {
-            set1.setVisibility(View.INVISIBLE);
-        }else {
-            set1.setVisibility(View.VISIBLE);
-        }
-        // byte[] gamesI = match.getGamesI();
-        // byte[] gamesJ = match.getGamesJ();
-        byte[][] games = match.getGames();
-        gamesI0.setText(games[0][0]+"");
-        gamesJ0.setText(games[0][1]+"");
-        if(games.length >= 2) {
-            gamesI1.setText(games[1][0]+"");
-            gamesJ1.setText(games[1][1]+"");
-        }
-        importance.setText(String.format("%.1f", imp*100)+"%");
-        if(match.servePoint()) {
-            serveI.setVisibility(View.VISIBLE);
-            serveJ.setVisibility(View.INVISIBLE);
-        }else {
-            serveJ.setVisibility(View.VISIBLE);
-            serveI.setVisibility(View.INVISIBLE);
-        }
-        //history.add(match.getHistoryEntry());
-        diagramm.addValue((float)p);
-    }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // outState.putSerializable("match", match);
-        Log.i("MatchActivity", "Match saved");
-        dbHelper.saveMatch(match);
-        outState.putLong("match", match.matchId);
-        outState.putSerializable("history", history);
+        pager = (ViewPager)findViewById(R.id.match_pager);
+        pager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int i) {
+                switch(i) {
+                    case 0:
+                        matchFragment = new MatchFragment();
+                        return matchFragment;
+                }
+                return null;
+            }
+
+            @Override
+            public int getCount() {
+                return 1;
+            }
+
+            @Override
+            public String getPageTitle(int i) {
+                return tabTitles[i];
+            }
+        });
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+
+            }
+            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
+            }
+            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
+            }
+        };
+
+        for(int j = 0; j < 1; j++) {
+            actionBar.addTab(actionBar.newTab().setText(tabTitles[j]).setTabListener(tabListener));
+        }
     }
 
     @Override
@@ -164,12 +110,6 @@ public class MatchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.edit_score:
-                Intent i = new Intent(this, ScoreActivity.class);
-                i.putExtra("nameI", buttonI.getText()+"");
-                i.putExtra("nameJ", buttonJ.getText()+"");
-                startActivityForResult(i, 0);
-                return true;
             case R.id.save_game:
                 dbHelper.saveMatch(match);
                 return true;
@@ -178,19 +118,22 @@ public class MatchActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK) {
-            Score s = (Score)data.getSerializableExtra("score");
-            history.clear();
-            // match.setScore(s);
-            diagramm.clear();
-            updateProbs();
-        }
+    public Match getMatch() {
+        return match;
     }
-    
-    
 
-    
+    public void updateProbs() {
+        double p = match.getWinProb();
+        double imp = match.importance();
+        if(matchFragment != null) matchFragment.updateProbs(p, imp);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i("MatchActivity", "Match saved");
+        dbHelper.saveMatch(match);
+        outState.putLong("match", match.matchId);
+    }
     
 }
