@@ -19,7 +19,10 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 	}
 
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(context.getResources().getString(R.string.sql_create_database));
+		String[] createScript = context.getResources().getStringArray(R.array.sql_create_database);
+		for(String sql : createScript) {
+			db.execSQL(sql);
+		}
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -34,7 +37,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues matchValues = new ContentValues();
 		if(match.matchId != -1) {
-			db.delete("matches", "match_id = ?s", new String[] {match.matchId+""});
+			db.delete("matches", "match_id = ?", new String[] {match.matchId+""});
 			matchValues.put("match_id", match.matchId);
 		}
 		matchValues.put("match_player1", match.player1);
@@ -82,7 +85,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		Cursor matchCursor = db.query(
 			"matches",
 			new String[] {"match_player1", "match_player2", "match_p1", "match_p2"},
-			"match_id = ?s",
+			"match_id = ?",
 			new String[] {matchId+""},
 			null, null, null);
 		int player1Index = matchCursor.getColumnIndex("match_player1");
@@ -101,7 +104,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
 			Cursor setCursor = db.query("sets",
 				new String[] {"set_winner", "set_tiebreak"},
-				"set_match = ?s",
+				"set_match = ?",
 				new String[] {matchId+""},
 				null, null, "set_nr ASC");
 			int setWinnerIndex = setCursor.getColumnIndex("set_winner");
@@ -115,7 +118,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
 			Cursor gameCursor = db.query("games",
 				new String[] {"game_set", "game_winner", "game_tiebreak"},
-				"game_match = ?s",
+				"game_match = ?",
 				new String[] {matchId+""},
 				null, null, "game_set, game_nr ASC");
 			int gameSetIndex = gameCursor.getColumnIndex("game_set");
@@ -130,7 +133,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
 			Cursor pointCursor = db.query("points",
 				new String[] {"point_set", "point_game", "point_winner", "point_server"},
-				"point_match = ?s",
+				"point_match = ?",
 				new String[] {matchId+""},
 				null, null, "point_set, point_game, point_nr ASC");
 			int pointSetIndex = pointCursor.getColumnIndex("point_set");

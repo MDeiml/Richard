@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sql_create_database">
+        <item>
+CREATE TABLE matches (
+    match_id INTEGER NOT NULL,
+    match_player1 TEXT,
+    match_player2 TEXT,
+    match_winner INTEGER NOT NULL,
+    match_p1 REAL NOT NULL,
+    match_p2 REAL NOT NULL,
+    PRIMARY KEY (match_id)
+);
+        </item>
+        <item>
+CREATE TABLE sets (
+    set_match INTEGER NOT NULL,
+    set_nr INTEGER NOT NULL,
+    set_winner INTEGER NOT NULL,
+    set_tiebreak INTEGER NOT NULL,
+    PRIMARY KEY (set_match, set_nr),
+    FOREIGN KEY (set_match) REFERENCES matches (match_id)
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+        </item>
+        <item>
+CREATE TABLE games (
+    game_match INTEGER NOT NULL,
+    game_set INTEGER NOT NULL,
+    game_nr INTEGER NOT NULL,
+    game_winner INTEGER NOT NULL,
+    game_tiebreak INTEGER NOT NULL,
+    PRIMARY KEY (game_match, game_set, game_nr),
+    FOREIGN KEY (game_match, game_set) REFERENCES sets (set_match, set_nr) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+        </item>
+        <item>
+CREATE TABLE points (
+    point_match INTEGER NOT NULL,
+    point_set INTEGER NOT NULL,
+    point_game INTEGER NOT NULL,
+    point_nr INTEGER NOT NULL,
+    point_winner INTEGER NOT NULL,
+    point_server INTEGER NOT NULL,
+    PRIMARY KEY (point_match, point_set, point_game, point_nr),
+    FOREIGN KEY (point_match, point_set, point_game) REFERENCES games (game_match, game_set, game_nr) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+        </item>
+    </string-array>
+</resources>

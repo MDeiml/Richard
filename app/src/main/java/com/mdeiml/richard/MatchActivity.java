@@ -72,27 +72,34 @@ public class MatchActivity extends AppCompatActivity {
             }
         });
         
+        String nameI;
+        String nameJ;
         Intent i = getIntent();
-        String nameI = i.getStringExtra("nameI").trim();
-        String nameJ = i.getStringExtra("nameJ").trim();
+        if(savedInstanceState != null && savedInstanceState.containsKey("match")) {
+            match = dbHelper.loadMatch(savedInstanceState.getLong("match"));
+            nameI = match.player1;
+            nameJ = match.player2;
+        }else if(i.hasExtra("match_id")) {
+            match = dbHelper.loadMatch(i.getLongExtra("match_id", 0));
+            nameI = match.player1;
+            nameJ = match.player2;
+        }else {
+            SharedPreferences pref = getSharedPreferences("com.mdeiml.richard", MODE_PRIVATE);
+            nameI = i.getStringExtra("nameI").trim();
+            nameJ = i.getStringExtra("nameJ").trim();
+
+            double pmean = pref.getFloat("pmean", 0.6f);
+            double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5));
+            pi = p[0];
+            pj = p[1];
+            match = new History(nameI, nameJ, pi, pj);
+        }
         nameI = nameI.isEmpty() ? "Spieler A" : nameI;
         nameJ = nameJ.isEmpty() ? "Spieler B" : nameJ;
         buttonI.setText(nameI);
         buttonJ.setText(nameJ);
         diagramm.setLabels(nameI, nameJ);
         
-        SharedPreferences pref = getSharedPreferences("com.mdeiml.richard", MODE_PRIVATE);
-        double pmean = pref.getFloat("pmean", 0.6f);
-        double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5));
-        pi = p[0];
-        pj = p[1];
-        
-        if(savedInstanceState != null && savedInstanceState.containsKey("match")) {
-            match = dbHelper.loadMatch(savedInstanceState.getLong("match"));
-            // match = (Match)savedInstanceState.getSerializable("match");
-        }else {
-            match = new History(nameI, nameJ, pi, pj);
-        }
         if(savedInstanceState != null && savedInstanceState.containsKey("history")) {
             history = (ArrayList<HistoryEntry>)savedInstanceState.getSerializable("history");
         }else {
@@ -162,6 +169,9 @@ public class MatchActivity extends AppCompatActivity {
                 i.putExtra("nameI", buttonI.getText()+"");
                 i.putExtra("nameJ", buttonJ.getText()+"");
                 startActivityForResult(i, 0);
+                return true;
+            case R.id.save_game:
+                dbHelper.saveMatch(match);
                 return true;
             default:
                 return false;
