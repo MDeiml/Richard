@@ -74,6 +74,8 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 					pointValues.put("point_nr", k);
 					pointValues.put("point_winner", point.winner);
 					pointValues.put("point_server", point.server);
+					pointValues.put("point_winprob", point.winProb);
+					pointValues.put("point_importance", point.importance);
 					db.insert("points", null, pointValues);
 				}
 			}
@@ -132,7 +134,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			}
 
 			Cursor pointCursor = db.query("points",
-				new String[] {"point_set", "point_game", "point_winner", "point_server"},
+				new String[] {"point_set", "point_game", "point_winner", "point_server", "point_winprob", "point_importance"},
 				"point_match = ?",
 				new String[] {matchId+""},
 				null, null, "point_set, point_game, point_nr ASC");
@@ -140,10 +142,14 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			int pointGameIndex = pointCursor.getColumnIndex("point_game");
 			int pointWinnerIndex = pointCursor.getColumnIndex("point_winner");
 			int pointServerIndex = pointCursor.getColumnIndex("point_server");
+			int pointWinprobIndex = pointCursor.getColumnIndex("point_winprob");
+			int pointImportanceIndex = pointCursor.getColumnIndex("point_importance");
 
 			while(pointCursor.moveToNext()) {
 				Match.Point point = new Match.Point((byte)pointCursor.getInt(pointServerIndex));
 				point.winner = (byte)pointCursor.getInt(pointWinnerIndex);
+				point.winProb = (float)pointCursor.getDouble(pointWinprobIndex);
+				point.importance = (float)pointCursor.getDouble(pointImportanceIndex);
 				match.sets.get(pointCursor.getInt(pointSetIndex)).games.get(pointCursor.getInt(pointGameIndex)).points.add(point);
 			}
 

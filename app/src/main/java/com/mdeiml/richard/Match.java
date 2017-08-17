@@ -2,6 +2,7 @@ package com.mdeiml.richard;
 
 import java.util.ArrayList;
 import org.apache.commons.math3.linear.RealMatrix;
+import android.util.Log;
 
 public class Match {
 
@@ -40,6 +41,9 @@ public class Match {
         this.matchId = matchId;
         sets.add(new Set(NO_TIEBREAK, (byte)1));
         updateProb(p1, p2);
+        Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
+        p.winProb = calcWinProb();
+        p.importance = calcImportance();
     }
 
     public int getCurrentSetNr() {
@@ -112,9 +116,14 @@ public class Match {
     }
 
     public byte point(byte player) {
+        return point(player, true);
+    }
+
+    private byte point(byte player, boolean calcStatistics) {
         byte w = getCurrentSet().point(player);
+        byte w1 = 0;
         if(w != 0) {
-            byte w1 = getWinner();
+            w1 = getWinner();
             if(w1 == 0) {
                 byte[] totalSets = totalSets();
                 boolean t = totalSets[0] == 1 && totalSets[1] == 1;
@@ -122,9 +131,15 @@ public class Match {
                 server = server == 1 ? (byte)2 : (byte)1;
                 sets.add(new Set(t ? MATCH_TIEBREAK : NO_TIEBREAK, server));
             }
-            return w1;
         }
-        return 0;
+        if(calcStatistics) {
+            Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
+            p.winProb = calcWinProb();
+            p.importance = calcImportance();
+            Log.i("Match", p.winProb+"p");
+            Log.i("Match", sets.size()+"n");
+        }
+        return w1;
     }
 
     public boolean removePoint() {
@@ -140,7 +155,7 @@ public class Match {
         return true;
     }
 
-    public double getWinProb() {
+    private float calcWinProb() {
         byte w = getWinner();
         if(w == 1) {
             return 1;
@@ -153,21 +168,29 @@ public class Match {
             double pm1 = s1 == 1 ? 1 : matM.getEntry(MarkovMatrix.getMatchMatrixIndex(s1+1, s2), 0);
             double pm2 = s2 == 1 ? 0 : matM.getEntry(MarkovMatrix.getMatchMatrixIndex(s1, s2+1), 0);
             double ps = getCurrentSet().getWinProb(matG1, matG2, matT1, matT2, matMT1, matMT2, matS1, matS2);
-            return ps * pm1 + (1 - ps) * pm2;
+            return (float)(ps * pm1 + (1 - ps) * pm2);
         }
     }
 
-    public double importance() {
+    private float calcImportance() {
         if(winner != 0) {
             return 0;
         }
-        point((byte)1);
-        double p1 = getWinProb();
+        point((byte)1, false);
+        float p1 = calcWinProb();
         removePoint();
-        point((byte)2);
-        double p2 = getWinProb();
+        point((byte)2, false);
+        float p2 = calcWinProb();
         removePoint();
         return p1 - p2;
+    }
+
+    public float getWinProb() {
+        return getCurrentSet().getCurrentGame().getCurrentPoint().winProb;
+    }
+
+    public float importance() {
+        return getCurrentSet().getCurrentGame().getCurrentPoint().importance;
     }
 
     public static class Set {
@@ -468,6 +491,8 @@ public class Match {
     public static class Point {
 
         public byte winner;
+        public float winProb;
+        public float importance;
         public final byte server;
 
         public Point(byte server) {

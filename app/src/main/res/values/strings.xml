@@ -3,15 +3,5 @@
 
     <string name="app_name">Richard</string>
     <string name="hello_world">Hello world!</string>
-    <string name="match_overview_sql">
-SELECT match_player1, match_player2,
-    (SELECT COUNT(*) FROM games WHERE game_match = match_id AND game_set = 1 AND game_winner = 1) AS s11
-    (SELECT COUNT(*) FROM games WHERE game_match = match_id AND game_set = 2 AND game_winner = 1) AS s21
-    (SELECT COUNT(*) FROM games WHERE game_match = match_id AND game_set = 3 AND game_winner = 1) AS s31
-    (SELECT COUNT(*) FROM games WHERE game_match = match_id AND game_set = 1 AND game_winner = 2) AS s12
-    (SELECT COUNT(*) FROM games WHERE game_match = match_id AND game_set = 2 AND game_winner = 2) AS s22
-    (SELECT COUNT(*) FROM games WHERE game_match = match_id AND game_set = 3 AND game_winner = 2) AS s32
-FROM match ORDER BY match_id
-    </string>
 
 </resources>

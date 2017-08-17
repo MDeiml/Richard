@@ -43,6 +43,8 @@ CREATE TABLE points (
     point_nr INTEGER NOT NULL,
     point_winner INTEGER NOT NULL,
     point_server INTEGER NOT NULL,
+    point_winprob REAL NULL,
+    point_importance REAL NOT NULL,
     PRIMARY KEY (point_match, point_set, point_game, point_nr),
     FOREIGN KEY (point_match, point_set, point_game) REFERENCES games (game_match, game_set, game_nr) 
         ON DELETE CASCADE ON UPDATE NO ACTION
