@@ -33,6 +33,7 @@ public class MatchFragment extends Fragment {
     private TextView importance;
     private View serveI;
     private View serveJ;
+    private ChartView chart;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -52,6 +53,8 @@ public class MatchFragment extends Fragment {
         importance = (TextView)root.findViewById(R.id.importance);
         serveI = root.findViewById(R.id.serveI);
         serveJ = root.findViewById(R.id.serveJ);
+        chart = (ChartView)root.findViewById(R.id.match_chart);
+
         buttonI.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 getMatch().point((byte)1);
@@ -76,10 +79,8 @@ public class MatchFragment extends Fragment {
     }
 
     public void updateProbs() {
-        ((MatchActivity)getActivity()).updateProbs();
-    }
-    
-    public void updateProbs(double p, double imp) {
+        double p = getMatch().getWinProb();
+        double imp = getMatch().importance();
         double piP = p*100;
         double pjP = 100-piP;
         propI.setText(String.format("%.1f", piP)+"%");
@@ -107,7 +108,7 @@ public class MatchFragment extends Fragment {
             serveJ.setVisibility(View.VISIBLE);
             serveI.setVisibility(View.INVISIBLE);
         }
-        //history.add(match.getHistoryEntry());
+        chart.drawMatch(getMatch());
     }
 
     private Match getMatch() {

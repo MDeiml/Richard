@@ -1,12 +1,13 @@
 package com.mdeiml.richard;
+
 import android.content.*;
 import android.view.*;
 import android.widget.*;
-
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.AppCompatSeekBar;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View.OnClickListener;
@@ -32,17 +33,16 @@ public class MainActivity extends AppCompatActivity {
         matchProp = (AppCompatSeekBar)findViewById(R.id.matchProp);
         matchPropI = (TextView)findViewById(R.id.matchPropI);
         matchPropJ = (TextView)findViewById(R.id.matchPropJ);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         matchProp.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            @Override
+            public void onStartTrackingTouch(SeekBar p1) {
+            }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar p1) {
-                    // TODO: Implement this method
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar p1) {
-                    // TODO: Implement this method
-                }
+            @Override
+            public void onStopTrackingTouch(SeekBar p1) {
+            }
 
             public void onProgressChanged(SeekBar s, int progress, boolean b) {
                 matchPropI.setText(progress+"%");

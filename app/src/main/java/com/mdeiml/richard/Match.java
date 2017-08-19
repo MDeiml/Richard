@@ -2,7 +2,6 @@ package com.mdeiml.richard;
 
 import java.util.ArrayList;
 import org.apache.commons.math3.linear.RealMatrix;
-import android.util.Log;
 
 public class Match {
 
@@ -136,8 +135,6 @@ public class Match {
             Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
             p.winProb = calcWinProb();
             p.importance = calcImportance();
-            Log.i("Match", p.winProb+"p");
-            Log.i("Match", sets.size()+"n");
         }
         return w1;
     }

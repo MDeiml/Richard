@@ -3,6 +3,7 @@ package com.mdeiml.richard;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,19 +24,23 @@ import java.util.ArrayList;
 
 public class MatchActivity extends AppCompatActivity {
 
-    public static final String[] tabTitles = new String[]{"Match"};
+    public static final String[] tabTitles = new String[]{"Match", "Statistics"};
     
     private SavedMatchesDbHelper dbHelper;
     private Match match;
     private String player1;
     private String player2;
     private MatchFragment matchFragment;
+    private StatisticsFragment statisticsFragment;
     private ViewPager pager;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         dbHelper = new SavedMatchesDbHelper(this);
 
@@ -65,13 +71,16 @@ public class MatchActivity extends AppCompatActivity {
                     case 0:
                         matchFragment = new MatchFragment();
                         return matchFragment;
+                    case 1:
+                        statisticsFragment = new StatisticsFragment();
+                        return statisticsFragment;
                 }
                 return null;
             }
 
             @Override
             public int getCount() {
-                return 1;
+                return 2;
             }
 
             @Override
@@ -80,24 +89,8 @@ public class MatchActivity extends AppCompatActivity {
             }
         });
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-            }
-            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-            }
-            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-            }
-        };
-
-        for(int j = 0; j < 1; j++) {
-            actionBar.addTab(actionBar.newTab().setText(tabTitles[j]).setTabListener(tabListener));
-        }
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(pager);
     }
 
     @Override
@@ -120,12 +113,6 @@ public class MatchActivity extends AppCompatActivity {
 
     public Match getMatch() {
         return match;
-    }
-
-    public void updateProbs() {
-        double p = match.getWinProb();
-        double imp = match.importance();
-        if(matchFragment != null) matchFragment.updateProbs(p, imp);
     }
 
     @Override
