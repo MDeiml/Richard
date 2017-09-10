@@ -5,8 +5,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -17,10 +24,23 @@ public class SavedGamesActivity extends AppCompatActivity {
 
     private ListView savedGamesList;
     private SavedMatchesDbHelper dbHelper;
+    private FloatingActionButton newGameButton;
+    private ActionMode actionMode;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.saved_games);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        newGameButton = (FloatingActionButton)findViewById(R.id.new_game_button);
+        newGameButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(SavedGamesActivity.this, NewGameActivity.class);
+                startActivity(i);
+            }
+        });
 
         dbHelper = new SavedMatchesDbHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -30,14 +50,31 @@ public class SavedGamesActivity extends AppCompatActivity {
         final int player2Index = cursor.getColumnIndex("match_player2");
 
         savedGamesList = (ListView)findViewById(R.id.saved_games_list);
+        savedGamesList.setItemsCanFocus(false);
+        savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         savedGamesList.setAdapter(new CursorAdapter(this, cursor) {
             public void bindView(View view, Context context, Cursor cursor) {
                 final long matchId = cursor.getLong(idIndex);
+                final int position = cursor.getPosition();
                 view.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        Intent i = new Intent(getApplicationContext(), MatchActivity.class);
-                        i.putExtra("match_id", matchId);
-                        startActivity(i);
+                        if(actionMode == null) {
+                            Intent i = new Intent(getApplicationContext(), MatchActivity.class);
+                            i.putExtra("match_id", matchId);
+                            startActivity(i);
+                        }else {
+                            SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
+                            savedGamesList.setItemChecked(position, !checked.get(position));
+                            updateActionMode();
+                        }
+                    }
+                });
+                view.setOnLongClickListener(new View.OnLongClickListener() {
+                    public boolean onLongClick(View v) {
+                        SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
+                        savedGamesList.setItemChecked(position, !checked.get(position));
+                        updateActionMode();
+                        return true;
                     }
                 });
 
@@ -91,5 +128,54 @@ public class SavedGamesActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void updateActionMode() {
+        SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
+        boolean hasCheckedItem = false;
+        for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
+            if(checked.get(i)) {
+                hasCheckedItem = true;
+            }
+        }
+
+        if(hasCheckedItem) {
+            if(actionMode == null) {
+                actionMode = startSupportActionMode(new ModeCallback());
+            }
+        }else {
+            if(actionMode != null) {
+                actionMode.finish();
+            }
+        }
+    }
+
+    private final class ModeCallback implements ActionMode.Callback {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.games_context_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
+                savedGamesList.setItemChecked(i, false);
+            }
+            if(actionMode == mode) {
+                actionMode = null;
+            }
+        }
+    };
 
 }

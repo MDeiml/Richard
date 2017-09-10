@@ -14,7 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.support.v7.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity {
+public class NewGameActivity extends AppCompatActivity {
     
     private Button start;
     private EditText nameI;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.newgame);
         start = (Button)findViewById(R.id.start);
         nameI = (EditText)findViewById(R.id.nameI);
         nameJ = (EditText)findViewById(R.id.nameJ);
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         });
         start.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, MatchActivity.class);
+                Intent i = new Intent(NewGameActivity.this, MatchActivity.class);
                 i.putExtra("nameI", nameI.getText().toString());
                 i.putExtra("nameJ", nameJ.getText().toString());
                 i.putExtra("m", matchProp.getProgress()/100.0);
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.newgame, menu);
         return true;
     }
 
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final SharedPreferences pref = getSharedPreferences("com.mdeiml.richard.PREFS", MODE_PRIVATE);
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(NewGameActivity.this);
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View v = inflater.inflate(R.layout.pmean_dialog, null);
             builder.setView(v)

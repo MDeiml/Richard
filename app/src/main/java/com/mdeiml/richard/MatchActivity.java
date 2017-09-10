@@ -103,9 +103,9 @@ public class MatchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            // case R.id.save_game:
-            //     dbHelper.saveMatch(match);
-            //     return true;
+            case R.id.save_game:
+                dbHelper.saveMatch(match);
+                return true;
             case R.id.undo:
                 match.removePoint();
                 redraw();

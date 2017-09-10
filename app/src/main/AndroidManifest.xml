@@ -8,14 +8,9 @@
         android:label="@string/app_name"
         android:theme="@style/RichardTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".NewGameActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|screenSize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MatchActivity"
@@ -24,7 +19,13 @@
         <activity
             android:name=".SavedGamesActivity"
             android:label="@string/app_name"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
