@@ -5,10 +5,10 @@
         android:id="@+id/set_pmean"
         android:title="Einstellungen"/>
     
-    <item
-        app:showAsAction="ifRoom"
-        android:id="@+id/show_saved_games"
-        android:title="Gespeicherte Spiele"
-        android:icon="@drawable/ic_save_black_24dp" />
+    <!-- <item -->
+    <!--     app:showAsAction="ifRoom" -->
+    <!--     android:id="@+id/show_saved_games" -->
+    <!--     android:title="Gespeicherte Spiele" -->
+    <!--     android:icon="@drawable/ic_save_black_24dp" /> -->
     
 </menu>

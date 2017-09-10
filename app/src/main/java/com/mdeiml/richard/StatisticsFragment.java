@@ -9,22 +9,25 @@ import android.view.ViewGroup;
 
 public class StatisticsFragment extends Fragment {
 
-    private ChartView chartView;
+    private ChartView chartWinprob;
+    private ChartView chartImp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         super.onCreateView(inflater, parent, savedInstanceState);
         View root = inflater.inflate(R.layout.statistics_fragment, parent, false);
-        chartView = (ChartView)root.findViewById(R.id.chart);
+        chartWinprob = (ChartView)root.findViewById(R.id.chart_winprob);
+        chartImp = (ChartView)root.findViewById(R.id.chart_imp);
+        chartImp.setType(ChartView.TYPE_IMPORTANCE);
         return root;
     }
 
     public void redraw() {
-        Log.i("StatisticsFragment", "test");
-        chartView.drawMatch(getMatch());
+        chartWinprob.drawMatch(getMatch());
+        chartImp.drawMatch(getMatch());
     }
 
-    public Match getMatch() {
+    private Match getMatch() {
         return ((MatchActivity)getActivity()).getMatch();
     }
 

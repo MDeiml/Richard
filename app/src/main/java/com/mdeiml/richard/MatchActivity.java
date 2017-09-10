@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 public class MatchActivity extends AppCompatActivity {
 
-    public static final String[] tabTitles = new String[]{"Match", "Statistics"};
+    public static final String[] tabTitles = new String[]{"Match", "Statistiken"};
     
     private SavedMatchesDbHelper dbHelper;
     private Match match;
@@ -103,8 +103,12 @@ public class MatchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.save_game:
-                dbHelper.saveMatch(match);
+            // case R.id.save_game:
+            //     dbHelper.saveMatch(match);
+            //     return true;
+            case R.id.undo:
+                match.removePoint();
+                redraw();
                 return true;
             default:
                 return false;
@@ -113,6 +117,11 @@ public class MatchActivity extends AppCompatActivity {
 
     public Match getMatch() {
         return match;
+    }
+
+    public void redraw() {
+        matchFragment.redraw();
+        statisticsFragment.redraw();
     }
 
     @Override

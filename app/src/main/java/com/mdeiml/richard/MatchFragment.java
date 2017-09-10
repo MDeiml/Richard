@@ -78,7 +78,7 @@ public class MatchFragment extends Fragment {
         return root;
     }
 
-    public void updateProbs() {
+    public void redraw() {
         double p = getMatch().getWinProb();
         double imp = getMatch().importance();
         double piP = p*100;
@@ -109,6 +109,10 @@ public class MatchFragment extends Fragment {
             serveI.setVisibility(View.INVISIBLE);
         }
         chart.drawMatch(getMatch());
+    }
+
+    public void updateProbs() {
+        ((MatchActivity)getActivity()).redraw();
     }
 
     private Match getMatch() {
