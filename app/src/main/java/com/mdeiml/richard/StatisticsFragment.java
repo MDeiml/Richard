@@ -12,6 +12,7 @@ public class StatisticsFragment extends Fragment {
 
     private ChartView chartWinprob;
     private ChartView chartImp;
+    private ChartView chartImpWin;
     private TextView serves1;
     private TextView serves2;
 
@@ -19,9 +20,11 @@ public class StatisticsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         super.onCreateView(inflater, parent, savedInstanceState);
         View root = inflater.inflate(R.layout.statistics_fragment, parent, false);
-        chartWinprob = (ChartView)root.findViewById(R.id.chart_winprob);
-        chartImp = (ChartView)root.findViewById(R.id.chart_imp);
+        chartWinprob = root.findViewById(R.id.chart_winprob);
+        chartImp = root.findViewById(R.id.chart_imp);
         chartImp.setType(ChartView.TYPE_IMPORTANCE);
+        chartImpWin = root.findViewById(R.id.chart_impwin);
+        chartImpWin.setType(ChartView.TYPE_IMPORTANCE_WIN);
         serves1 = root.findViewById(R.id.stats_serves1);
         serves2 = root.findViewById(R.id.stats_serves2);
         redraw();
@@ -32,6 +35,7 @@ public class StatisticsFragment extends Fragment {
         if(chartWinprob != null) {
             chartWinprob.drawMatch(getMatch());
             chartImp.drawMatch(getMatch());
+            chartImpWin.drawMatch(getMatch());
             int[] points = getMatch().totalPoints();
             String perc1 = points[2] + points[5] > 0 ? (100 * points[2] / (points[2] + points[5])) + "" : "-";
             serves1.setText(points[2]+" ("+perc1+"%)");

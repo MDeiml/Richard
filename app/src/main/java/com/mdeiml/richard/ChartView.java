@@ -9,11 +9,17 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 import java.util.ArrayList;
+import android.util.Log;
+import java.util.TreeSet;
+import java.util.Iterator;
 
 public class ChartView extends View {
 
     public static final int TYPE_WINPROB = 1;
     public static final int TYPE_IMPORTANCE = 2;
+    public static final int TYPE_IMPORTANCE_WIN = 3;
+
+    private static final int IMPORTANCE_WIN_PARTS = 10;
    
     private Paint bluePaint;
     private Paint redPaint;
@@ -79,6 +85,7 @@ public class ChartView extends View {
         int halfText = (int)(dpr*7);
 
         switch(type) {
+            case TYPE_IMPORTANCE_WIN:
             case TYPE_WINPROB: {
                 canvas.drawLine(ls, ys+h/2, ls+w, ys+h/2, axisPaint);
                 canvas.drawText("50% ", ls, ys+h/2+halfText, textPaint);
@@ -106,40 +113,108 @@ public class ChartView extends View {
         }
 
         if(match != null) {
-            int numEntries = 0;
-            for(Match.Set set : match.sets) {
-                for(Match.Game game : set.games) {
-                    numEntries += game.points.size();
+            if(type == TYPE_WINPROB || type == TYPE_IMPORTANCE) {
+                int numEntries = 0;
+                for(Match.Set set : match.sets) {
+                    for(Match.Game game : set.games) {
+                        numEntries += game.points.size();
+                    }
                 }
-            }
-            numEntries = (numEntries/50+1)*50;
-            float entryWidth = w/numEntries;
-            float lastVal = 0;
-            int index = 0;
-            for(Match.Set set : match.sets) {
-                for(Match.Game game : set.games) {
-                    for(Match.Point point : game.points) {
-                        float val = 0;
-                        Paint linePaint = bluePaint;
-                        switch(type) {
-                            case TYPE_WINPROB:
-                                val = point.winProb;
-                                linePaint = bluePaint;
-                                break;
-                            case TYPE_IMPORTANCE:
-                                val = point.importance * 5;
-                                linePaint = redPaint;
-                                break;
+                numEntries = (numEntries/50+1)*50;
+                float entryWidth = w/numEntries;
+                float lastVal = 0;
+                int index = 0;
+                for(Match.Set set : match.sets) {
+                    for(Match.Game game : set.games) {
+                        for(Match.Point point : game.points) {
+                            float val = 0;
+                            Paint linePaint = bluePaint;
+                            switch(type) {
+                                case TYPE_WINPROB:
+                                    val = point.winProb;
+                                    linePaint = bluePaint;
+                                    break;
+                                case TYPE_IMPORTANCE:
+                                    val = point.importance * 5;
+                                    linePaint = redPaint;
+                                    break;
+                            }
+                            if(index != 0) {
+                                int x0 = (int)((index-1)*entryWidth);
+                                int y0 = (int)((1-lastVal)*h);
+                                int x1 = (int)(index*entryWidth);
+                                int y1 = (int)((1-val)*h);
+                                canvas.drawLine(ls+x0, ys+y0, ls+x1, ys+y1, linePaint);
+                            }
+                            lastVal = val;
+                            index++;
                         }
-                        if(index != 0) {
-                            int x0 = (int)((index-1)*entryWidth);
-                            int y0 = (int)((1-lastVal)*h);
-                            int x1 = (int)(index*entryWidth);
-                            int y1 = (int)((1-val)*h);
-                            canvas.drawLine(ls+x0, ys+y0, ls+x1, ys+y1, linePaint);
+                    }
+                }
+            }else if(type == TYPE_IMPORTANCE_WIN) {
+                TreeSet<Float> imps = new TreeSet<Float>();
+                for(Match.Set set : match.sets) {
+                    for(Match.Game game : set.games) {
+                        for(Match.Point point : game.points) {
+                            imps.add(point.importance);
                         }
-                        lastVal = val;
-                        index++;
+                    }
+                }
+                int size = imps.size();
+                int n = Math.min(size, IMPORTANCE_WIN_PARTS);
+                if(n > 0) {
+                    float minImp = imps.first();
+                    float maxImp = imps.last();
+                    Log.i("ChartView", n + ", " + minImp + ", " + maxImp);
+                    float[] imps0 = new float[size];
+                    int index = 0;
+                    for(Iterator<Float> it = imps.iterator(); it.hasNext();) {
+                        imps0[index++] = it.next();
+                    }
+                    float[] scale = new float[n];
+                    int j = 0;
+                    for(int i = 0; i < n; i++) {
+                        float val = minImp + i * (maxImp - minImp);
+                        boolean b = false;
+                        while(size - j < n - i && imps0[j] < val) {
+                            j++;
+                            b = true;
+                        }
+                        if(b) {
+                            if(Math.abs(imps0[j-1] - val) < Math.abs(imps0[j] - val)) {
+                                scale[i] = imps0[j-1];
+                            }else {
+                                scale[i] = imps0[j];
+                                j++;
+                            }
+                        }else {
+                            scale[i] = imps0[j];
+                            j++;
+                        }
+                    }
+                    int[] data = new int[n];
+                    int[] ns = new int[n];
+                    for(Match.Set set : match.sets) {
+                        for(Match.Game game : set.games) {
+                            for(Match.Point point : game.points) {
+                                for(int i = 0; i < n; i++) {
+                                    if(i == n - 1 || Math.abs(scale[i+1] - point.importance) >= Math.abs(scale[i] - point.importance)) {
+                                        if(point.winner == 1) data[i]++;
+                                        ns[i]++;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    float entryWidth = w / n;
+                    for(int i = 0; i < n; i++) {
+                        float val = (float)data[i] / ns[i];
+                        int x0 = (int)(entryWidth * (i + 0.2));
+                        int x1 = (int)(x0 + entryWidth * 0.6);
+                        int y = (int)(val * h);
+                        canvas.drawRect(ls + x0, ys, ls + x1, ys + y, redPaint);
+                        canvas.drawRect(ls + x0, ys + y, ls + x1, ys + h, bluePaint);
                     }
                 }
             }
