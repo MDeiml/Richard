@@ -19,12 +19,15 @@ public class StatisticsFragment extends Fragment {
         chartWinprob = (ChartView)root.findViewById(R.id.chart_winprob);
         chartImp = (ChartView)root.findViewById(R.id.chart_imp);
         chartImp.setType(ChartView.TYPE_IMPORTANCE);
+        Log.i("StatisticsFragment", chartWinprob.toString());
         return root;
     }
 
     public void redraw() {
-        chartWinprob.drawMatch(getMatch());
-        chartImp.drawMatch(getMatch());
+        if(chartWinprob != null && chartImp != null) {
+            chartWinprob.drawMatch(getMatch());
+            chartImp.drawMatch(getMatch());
+        }
     }
 
     private Match getMatch() {
