@@ -85,7 +85,6 @@ public class ChartView extends View {
         int halfText = (int)(dpr*7);
 
         switch(type) {
-            case TYPE_IMPORTANCE_WIN:
             case TYPE_WINPROB: {
                 canvas.drawLine(ls, ys+h/2, ls+w, ys+h/2, axisPaint);
                 canvas.drawText("50% ", ls, ys+h/2+halfText, textPaint);
@@ -156,7 +155,7 @@ public class ChartView extends View {
                 for(Match.Set set : match.sets) {
                     for(Match.Game game : set.games) {
                         for(Match.Point point : game.points) {
-                            imps.add(point.importance);
+                            if(point.winner != 0) imps.add(point.importance);
                         }
                     }
                 }
@@ -194,27 +193,42 @@ public class ChartView extends View {
                     }
                     int[] data = new int[n];
                     int[] ns = new int[n];
+                    int maxN = 0;
                     for(Match.Set set : match.sets) {
                         for(Match.Game game : set.games) {
                             for(Match.Point point : game.points) {
                                 for(int i = 0; i < n; i++) {
                                     if(i == n - 1 || Math.abs(scale[i+1] - point.importance) >= Math.abs(scale[i] - point.importance)) {
                                         if(point.winner == 1) data[i]++;
-                                        ns[i]++;
+                                        if(point.winner != 0) ns[i]++;
+                                        maxN = Math.max(Math.max(maxN, data[i]), ns[i] - data[i]);
                                         break;
                                     }
                                 }
                             }
                         }
                     }
+                    int nlines = 2;
+                    canvas.drawLine(ls, ys+h/2, ls+w, ys+h/2, axisPaint);
+                    canvas.drawText("0", ls, ys+h/2+halfText, textPaint);
+                    for(int i = 0; i <= nlines; i++) {
+                        int val = maxN*i/nlines;
+                        int y = val*h/maxN/2;
+                        canvas.drawLine(ls, ys+h/2+y, ls+w, ys+h/2+y, indicatorPaint);
+                        canvas.drawText(val+"", ls, ys+h/2-y+halfText, textPaint);
+                        canvas.drawLine(ls, ys+h/2-y, ls+w, ys+h/2-y, indicatorPaint);
+                        canvas.drawText(val+"", ls, ys+h/2+y+halfText, textPaint);
+                    }
                     float entryWidth = w / n;
                     for(int i = 0; i < n; i++) {
-                        float val = (float)data[i] / ns[i];
+                        float val1 = 0.5f - ((float)data[i] / maxN) / 2;
+                        float val2 = 0.5f + ((float)(ns[i] - data[i]) / maxN) / 2;
                         int x0 = (int)(entryWidth * (i + 0.2));
                         int x1 = (int)(x0 + entryWidth * 0.6);
-                        int y = (int)(val * h);
-                        canvas.drawRect(ls + x0, ys, ls + x1, ys + y, redPaint);
-                        canvas.drawRect(ls + x0, ys + y, ls + x1, ys + h, bluePaint);
+                        int y1 = (int)(val1 * h);
+                        int y2 = (int)(val2 * h);
+                        canvas.drawRect(ls + x0, ys + y2, ls + x1, ys + h / 2, bluePaint);
+                        canvas.drawRect(ls + x0, ys + h / 2, ls + x1, ys + y1, redPaint);
                     }
                 }
             }

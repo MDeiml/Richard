@@ -15,6 +15,8 @@ public class StatisticsFragment extends Fragment {
     private ChartView chartImpWin;
     private TextView serves1;
     private TextView serves2;
+    private TextView breaks1;
+    private TextView breaks2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
@@ -27,6 +29,8 @@ public class StatisticsFragment extends Fragment {
         chartImpWin.setType(ChartView.TYPE_IMPORTANCE_WIN);
         serves1 = root.findViewById(R.id.stats_serves1);
         serves2 = root.findViewById(R.id.stats_serves2);
+        breaks1 = root.findViewById(R.id.stats_breaks1);
+        breaks2 = root.findViewById(R.id.stats_breaks2);
         redraw();
         return root;
     }
@@ -41,6 +45,9 @@ public class StatisticsFragment extends Fragment {
             serves1.setText(points[2]+" ("+perc1+"%)");
             String perc2 = points[4] + points[3] > 0 ? (100 * points[4] / (points[4] + points[3])) + "" : "-";
             serves2.setText(points[4]+" ("+perc2+"%)");
+            int[] breaks = getMatch().breaks();
+            breaks1.setText(breaks[0]+"");
+            breaks2.setText(breaks[1]+"");
         }
     }
 

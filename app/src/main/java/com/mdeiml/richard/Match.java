@@ -100,6 +100,18 @@ public class Match {
         return winner;
     }
 
+    public int[] breaks() {
+        int[] breaks = new int[2];
+        breaks[0] = 0;
+        breaks[1] = 0;
+        for(Set set : sets) {
+            int[] b = set.breaks();
+            breaks[0] += b[0];
+            breaks[1] += b[1];
+        }
+        return breaks;
+    }
+
     public int[] totalPoints() {
         int[] points = new int[6];
         for(int i = 0; i < 6; i++) {
@@ -248,6 +260,18 @@ public class Match {
             return winner;
         }
 
+        public int[] breaks() {
+            int[] breaks = new int[2];
+            breaks[0] = 0;
+            breaks[1] = 0;
+            for(Game game : games) {
+                if(game.isBreak()) {
+                    breaks[game.getWinner() - 1]++;
+                }
+            }
+            return breaks;
+        }
+
         public int[] totalPoints() {
             int[] points = new int[6];
             for(int i = 0; i < 6; i++) {
@@ -379,6 +403,11 @@ public class Match {
                 }
             }
             return winner;
+        }
+
+        public boolean isBreak() {
+            byte w = getWinner();
+            return tiebreak == NO_TIEBREAK && w != 0 && w != points.get(0).server;
         }
 
         public byte[] totalPoints() {
