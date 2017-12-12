@@ -179,6 +179,7 @@ public class ChartView extends View {
                     }
                     float[] scale = new float[n];
                     int j = 0;
+                    /*
                     for(int i = 0; i < n; i++) {
                         float val = minImp + i * (maxImp - minImp);
                         boolean b = false;
@@ -197,7 +198,11 @@ public class ChartView extends View {
                             scale[i] = imps0[j];
                             j++;
                         }
+                    }/*/
+                    for(int i = 0; i < n; i++) {
+                        scale[i] = minImp + (maxImp - minImp) * i / (n - 1);
                     }
+                    //*/
                     int[] data = new int[n];
                     int[] ns = new int[n];
                     int maxN = 0;
