@@ -100,6 +100,32 @@ public class Match {
         return winner;
     }
 
+    public int[] breaks() {
+        int[] breaks = new int[2];
+        breaks[0] = 0;
+        breaks[1] = 0;
+        for(Set set : sets) {
+            int[] b = set.breaks();
+            breaks[0] += b[0];
+            breaks[1] += b[1];
+        }
+        return breaks;
+    }
+
+    public int[] totalPoints() {
+        int[] points = new int[6];
+        for(int i = 0; i < 6; i++) {
+            points[i] = 0;
+        }
+        for(Set set : sets) {
+            int[] p = set.totalPoints();
+            for(int i = 0; i < 6; i++) {
+                points[i] += p[i];
+            }
+        }
+        return points;
+    }
+
     public byte[] totalSets() {
         byte sets1 = 0;
         byte sets2 = 0;
@@ -234,6 +260,32 @@ public class Match {
             return winner;
         }
 
+        public int[] breaks() {
+            int[] breaks = new int[2];
+            breaks[0] = 0;
+            breaks[1] = 0;
+            for(Game game : games) {
+                if(game.isBreak()) {
+                    breaks[game.getWinner() - 1]++;
+                }
+            }
+            return breaks;
+        }
+
+        public int[] totalPoints() {
+            int[] points = new int[6];
+            for(int i = 0; i < 6; i++) {
+                points[i] = 0;
+            }
+            for(Game game : games) {
+                byte[] p = game.totalPoints();
+                for(int i = 0; i < 6; i++) {
+                    points[i] += p[i];
+                }
+            }
+            return points;
+        }
+
         public byte[] totalGames() {
             byte games1 = 0;
             byte games2 = 0;
@@ -353,17 +405,32 @@ public class Match {
             return winner;
         }
 
+        public boolean isBreak() {
+            byte w = getWinner();
+            return tiebreak == NO_TIEBREAK && w != 0 && w != points.get(0).server;
+        }
+
         public byte[] totalPoints() {
-            byte points1 = 0;
-            byte points2 = 0;
+            byte points1S = 0;
+            byte points2S = 0;
+            byte points1R = 0;
+            byte points2R = 0;
             for(Point p : points) {
-                if(p.winner == 1) {
-                    points1++;
-                }else if(p.winner == 2) {
-                    points2++;
+                if(p.server == 1) {
+                    if(p.winner == 1) {
+                        points1S++;
+                    }else if(p.winner == 2) {
+                        points2R++;
+                    }
+                }else {
+                    if(p.winner == 1) {
+                        points1R++;
+                    }else if(p.winner == 2) {
+                        points2S++;
+                    }
                 }
             }
-            return new byte[] {points1, points2};
+            return new byte[] {(byte)(points1S + points1R), (byte)(points2S + points2R), points1S, points1R, points2S, points2R};
         }
 
         public byte point(byte player) {

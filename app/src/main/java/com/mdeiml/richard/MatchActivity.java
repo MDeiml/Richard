@@ -39,7 +39,7 @@ public class MatchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         dbHelper = new SavedMatchesDbHelper(this);
@@ -120,8 +120,8 @@ public class MatchActivity extends AppCompatActivity {
     }
 
     public void redraw() {
-        matchFragment.redraw();
-        statisticsFragment.redraw();
+        if(matchFragment != null) matchFragment.redraw();
+        if(statisticsFragment != null) statisticsFragment.redraw();
     }
 
     @Override
