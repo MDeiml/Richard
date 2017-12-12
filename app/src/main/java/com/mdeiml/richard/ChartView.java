@@ -26,6 +26,7 @@ public class ChartView extends View {
     private Paint axisPaint;
     private Paint indicatorPaint;
     private Paint textPaint;
+    private Paint scalePaint;
     private String labelA;
     private String labelB;
     private Match match;
@@ -62,6 +63,12 @@ public class ChartView extends View {
         textPaint.setAntiAlias(true);
         textPaint.setTextAlign(Paint.Align.RIGHT);
         textPaint.setTextSize(14*dpr);
+        
+        scalePaint = new Paint();
+        scalePaint.setColor(0xff888888);
+        scalePaint.setAntiAlias(true);
+        scalePaint.setTextAlign(Paint.Align.CENTER);
+        scalePaint.setTextSize(14*dpr);
         
         labelA = "";
         labelB = "";
@@ -175,7 +182,7 @@ public class ChartView extends View {
                     for(int i = 0; i < n; i++) {
                         float val = minImp + i * (maxImp - minImp);
                         boolean b = false;
-                        while(size - j < n - i && imps0[j] < val) {
+                        while(size - j > n - i && imps0[j] < val) {
                             j++;
                             b = true;
                         }
@@ -208,27 +215,39 @@ public class ChartView extends View {
                             }
                         }
                     }
-                    int nlines = 2;
-                    canvas.drawLine(ls, ys+h/2, ls+w, ys+h/2, axisPaint);
-                    canvas.drawText("0", ls, ys+h/2+halfText, textPaint);
-                    for(int i = 0; i <= nlines; i++) {
+                    int nlines = 4;
+                    canvas.drawLine(ls, ys+h, ls+w, ys+h, axisPaint);
+                    canvas.drawText("0", ls, ys+h+halfText, textPaint);
+                    for(int i = 1; i <= nlines; i++) {
                         int val = maxN*i/nlines;
-                        int y = val*h/maxN/2;
-                        canvas.drawLine(ls, ys+h/2+y, ls+w, ys+h/2+y, indicatorPaint);
-                        canvas.drawText(val+"", ls, ys+h/2-y+halfText, textPaint);
-                        canvas.drawLine(ls, ys+h/2-y, ls+w, ys+h/2-y, indicatorPaint);
-                        canvas.drawText(val+"", ls, ys+h/2+y+halfText, textPaint);
+                        int y = val*h/maxN;
+                        canvas.drawLine(ls, ys+h-y, ls+w, ys+h-y, indicatorPaint);
+                        canvas.drawText(val+"", ls, ys+h-y+halfText, textPaint);
                     }
                     float entryWidth = w / n;
                     for(int i = 0; i < n; i++) {
-                        float val1 = 0.5f - ((float)data[i] / maxN) / 2;
-                        float val2 = 0.5f + ((float)(ns[i] - data[i]) / maxN) / 2;
-                        int x0 = (int)(entryWidth * (i + 0.2));
-                        int x1 = (int)(x0 + entryWidth * 0.6);
-                        int y1 = (int)(val1 * h);
-                        int y2 = (int)(val2 * h);
-                        canvas.drawRect(ls + x0, ys + y2, ls + x1, ys + h / 2, bluePaint);
-                        canvas.drawRect(ls + x0, ys + h / 2, ls + x1, ys + y1, redPaint);
+                        float val1 = (float)data[i] / maxN;
+                        float val2 = (float)(ns[i] - data[i]) / maxN;
+                        int x0 = (int)(entryWidth * (i + 0.15));
+                        int x1 = (int)(entryWidth * (i + 0.45));
+                        int xt = (int)(entryWidth * (i + 0.5));
+                        int x2 = (int)(entryWidth * (i + 0.55));
+                        int x3 = (int)(entryWidth * (i + 0.85));
+                        int y1 = Math.max(2, (int)(val1 * h));
+                        int y2 = Math.max(2, (int)(val2 * h));
+                        canvas.drawRect(ls + x0, ys + h, ls + x1, ys + h - y1, redPaint);
+                        canvas.drawRect(ls + x2, ys + h, ls + x3, ys + h - y2, bluePaint);
+                        canvas.drawText((int)(scale[i]*1000)/10f+"%", ls + xt, ys + h + 2 * halfText, scalePaint);
+                    }
+                }else {
+                    int nlines = 4;
+                    canvas.drawLine(ls, ys+h, ls+w, ys+h, axisPaint);
+                    canvas.drawText("0", ls, ys+h+halfText, textPaint);
+                    for(int i = 1; i <= nlines; i++) {
+                        int val = i;
+                        int y = val*h/nlines;
+                        canvas.drawLine(ls, ys+h-y, ls+w, ys+h-y, indicatorPaint);
+                        canvas.drawText(i+"", ls, ys+h-y+halfText, textPaint);
                     }
                 }
             }
