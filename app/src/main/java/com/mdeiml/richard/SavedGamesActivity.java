@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import org.apache.commons.math3.stat.descriptive.moment.FirstMoment;
+import android.widget.Toast;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -66,6 +68,7 @@ public class SavedGamesActivity extends AppCompatActivity {
                             SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
                             savedGamesList.setItemChecked(position, !checked.get(position));
                             updateActionMode();
+                            Toast.makeText(getApplicationContext(), "x", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -74,6 +77,7 @@ public class SavedGamesActivity extends AppCompatActivity {
                         SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
                         savedGamesList.setItemChecked(position, !checked.get(position));
                         updateActionMode();
+                        Toast.makeText(getApplicationContext(), "y", Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
@@ -128,6 +132,12 @@ public class SavedGamesActivity extends AppCompatActivity {
             }
         });
     }
+    
+    private void updateAdapter() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query("matches", new String[] {"match_id AS _id", "match_player1", "match_player2"}, null, null, null, null, "match_id");
+        ((CursorAdapter)savedGamesList.getAdapter()).changeCursor(cursor);
+    }
 
     private void updateActionMode() {
         SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
@@ -135,17 +145,24 @@ public class SavedGamesActivity extends AppCompatActivity {
         for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
             if(checked.get(i)) {
                 hasCheckedItem = true;
+                break;
             }
         }
 
         if(hasCheckedItem) {
             if(actionMode == null) {
                 actionMode = startSupportActionMode(new ModeCallback());
+                Toast.makeText(this, "a", Toast.LENGTH_SHORT).show();
             }
         }else {
             if(actionMode != null) {
                 actionMode.finish();
+                Toast.makeText(this, "b", Toast.LENGTH_SHORT).show();
             }
+        }
+        checked = savedGamesList.getCheckedItemPositions();
+        for(int i = 0; i < savedGamesList.getCount(); i++) {
+            Toast.makeText(getApplicationContext(), i+""+checked.get(i), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -164,7 +181,25 @@ public class SavedGamesActivity extends AppCompatActivity {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return false;
+            switch(item.getItemId()) {
+                case R.id.delete:
+                    SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
+                    Toast.makeText(getApplicationContext(), checked.get(0)+"test", Toast.LENGTH_SHORT).show();
+                    Cursor cursor = ((CursorAdapter)savedGamesList.getAdapter()).getCursor();
+                    cursor.moveToFirst();
+                    int idIndex = cursor.getColumnIndex("_id");
+                    for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
+                        Toast.makeText(getApplicationContext(), i+", "+checked.get(i), Toast.LENGTH_SHORT).show();
+                        if(checked.get(i)) {
+                            dbHelper.deleteMatch(cursor.getLong(idIndex));
+                        }
+                        cursor.moveToNext();
+                    }
+                    break;
+            }
+            actionMode.finish();
+            updateAdapter();
+            return true;
         }
 
         @Override
@@ -175,6 +210,7 @@ public class SavedGamesActivity extends AppCompatActivity {
             if(actionMode == mode) {
                 actionMode = null;
             }
+            updateActionMode();
         }
     };
 

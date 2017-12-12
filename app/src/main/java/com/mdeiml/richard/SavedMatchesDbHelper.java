@@ -26,11 +26,11 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // TODO
 	}
 
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // TODO
 	}
 
 	public void saveMatch(Match match) {
@@ -81,6 +81,11 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			}
 		}
 	}
+    
+    public void deleteMatch(long matchId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("matches", "match_id = ?", new String[] {matchId+""});
+    }
 
 	public Match loadMatch(long matchId) {
 		SQLiteDatabase db = getReadableDatabase();

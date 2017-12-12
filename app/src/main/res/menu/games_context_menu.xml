@@ -3,14 +3,8 @@
 
     <item
         app:showAsAction="ifRoom"
-        android:id="@+id/undo"
-        android:title="Zurück"
+        android:id="@+id/delete"
+        android:title="Löschen"
         android:icon="@drawable/ic_undo_white_24dp" />
-
-    <item
-        app:showAsAction="ifRoom"
-        android:id="@+id/save_game"
-        android:title="Spiel speichern"
-        android:icon="@drawable/ic_save_white_24dp" />
     
 </menu>
