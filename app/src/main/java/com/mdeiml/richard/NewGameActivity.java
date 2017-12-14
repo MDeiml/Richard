@@ -74,10 +74,6 @@ public class NewGameActivity extends AppCompatActivity {
                 PMeanDialog dialog = new PMeanDialog();
                 dialog.show(getSupportFragmentManager(), "pmean");
                 return true;
-            // case R.id.show_saved_games:
-            //     Intent i = new Intent(this, SavedGamesActivity.class);
-            //     startActivity(i);
-            //     return true;
             default:
                 return false;
         }
