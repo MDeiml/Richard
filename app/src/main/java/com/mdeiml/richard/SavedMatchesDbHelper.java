@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.content.Context;
 import android.content.ContentValues;
 import java.util.ArrayList;
+import android.util.Log;
 
 public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
@@ -37,7 +38,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues matchValues = new ContentValues();
 		if(match.matchId != -1) {
-			db.delete("matches", "match_id = ?", new String[] {match.matchId+""});
+            deleteMatch(match.matchId);
 			matchValues.put("match_id", match.matchId);
 		}
 		matchValues.put("match_player1", match.player1);
@@ -58,6 +59,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			db.insert("sets", null, setValues);
 			for(int j = 0; j < set.games.size(); j++) {
 				Match.Game game = set.games.get(j);
+                Log.i("SavedMatchesDbHelper", j + ", " + game.winner);
 				ContentValues gameValues = new ContentValues();
 				gameValues.put("game_match", matchId);
 				gameValues.put("game_set", i);
@@ -85,6 +87,9 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
     public void deleteMatch(long matchId) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete("matches", "match_id = ?", new String[] {matchId+""});
+        db.delete("sets", "set_match = ?", new String[] {matchId+""});
+        db.delete("games", "game_match = ?", new String[] {matchId+""});
+        db.delete("points", "point_match = ?", new String[] {matchId+""});
     }
 
 	public Match loadMatch(long matchId) {

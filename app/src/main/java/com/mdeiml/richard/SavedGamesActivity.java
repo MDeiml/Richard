@@ -19,8 +19,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import org.apache.commons.math3.stat.descriptive.moment.FirstMoment;
-import android.widget.Toast;
+import android.util.Log;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -68,7 +67,6 @@ public class SavedGamesActivity extends AppCompatActivity {
                             SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
                             savedGamesList.setItemChecked(position, !checked.get(position));
                             updateActionMode();
-                            Toast.makeText(getApplicationContext(), "x", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -77,7 +75,6 @@ public class SavedGamesActivity extends AppCompatActivity {
                         SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
                         savedGamesList.setItemChecked(position, !checked.get(position));
                         updateActionMode();
-                        Toast.makeText(getApplicationContext(), "y", Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
@@ -96,6 +93,8 @@ public class SavedGamesActivity extends AppCompatActivity {
                         (TextView)view.findViewById(R.id.saved_game_set32),
                     }
                 };
+                TextView sgPoints1 = view.findViewById(R.id.saved_game_points1);
+                TextView sgPoints2 = view.findViewById(R.id.saved_game_points2);
                 for(int i = 0; i < sgSets.length; i++) {
                     for(int j = 0; j < sgSets[i].length; j++) {
                         sgSets[i][j].setText("0");
@@ -109,7 +108,7 @@ public class SavedGamesActivity extends AppCompatActivity {
                 Cursor setCursor = db.query(
                     "games",
                     new String[] {"COUNT(*) as count", "game_set", "game_winner"},
-                    "game_match = ?",
+                    "game_winner != 0 AND game_match = ?",
                     new String[] {matchId+""},
                     "game_set, game_winner",
                     null,
@@ -120,9 +119,63 @@ public class SavedGamesActivity extends AppCompatActivity {
                 int winnerIndex = setCursor.getColumnIndex("game_winner");
 
                 while(setCursor.moveToNext()) {
-                    if(setCursor.getInt(winnerIndex) == 0)
-                        continue;
                     sgSets[setCursor.getInt(winnerIndex)-1][setCursor.getInt(setIndex)].setText(setCursor.getInt(countIndex)+"");
+                }
+
+                setCursor.close();
+
+                Cursor gameCursor = db.query(
+                    "games",
+                    new String[] {"game_set", "game_nr", "game_tiebreak"},
+                    "game_winner = 0 AND game_match = ?",
+                    new String[] {matchId+""},
+                    null,
+                    null,
+                    "game_set ASC, game_nr ASC",
+                    "1"
+                );
+
+                if(gameCursor.moveToNext()) {
+                    int gameSet = gameCursor.getInt(gameCursor.getColumnIndexOrThrow("game_set"));
+                    int gameNr = gameCursor.getInt(gameCursor.getColumnIndexOrThrow("game_nr"));
+                    int tiebreak = gameCursor.getInt(gameCursor.getColumnIndexOrThrow("game_tiebreak"));
+                    gameCursor.close();
+
+                    gameCursor = db.query(
+                        "points",
+                        new String[] {"COUNT(*) as count", "point_winner"},
+                        "point_winner != 0 AND point_match = ? AND point_set = ? AND point_game = ?",
+                        new String[] {matchId+"", gameSet+"", gameNr+""},
+                        "point_winner",
+                        null,
+                        null
+                    );
+
+                    int points1 = 0;
+                    int points2 = 0;
+                    winnerIndex = gameCursor.getColumnIndex("point_winner");
+                    countIndex = gameCursor.getColumnIndex("count");
+                    while(gameCursor.moveToNext()) {
+                        if(gameCursor.getInt(winnerIndex) == 1) {
+                            points1 = gameCursor.getInt(countIndex);
+                        }else {
+                            points2 = gameCursor.getInt(countIndex);
+                        }
+                    }
+                    if(points1 != 0 || points2 != 0) {
+                        if(tiebreak == Match.NO_TIEBREAK) {
+                            if(points1 >= 4 && points2 >= 4) {
+                                byte pointsMax = (byte)Math.max(points1, points2);
+                                points1 += 3 - pointsMax;
+                                points2 += 3 - pointsMax;
+                            }
+                            sgPoints1.setText(Match.POINT_NAMES[points1]);
+                            sgPoints2.setText(Match.POINT_NAMES[points2]);
+                        }else {
+                            sgPoints1.setText(points1+"");
+                            sgPoints2.setText(points2+"");
+                        }
+                    }
                 }
             }
             
@@ -152,18 +205,13 @@ public class SavedGamesActivity extends AppCompatActivity {
         if(hasCheckedItem) {
             if(actionMode == null) {
                 actionMode = startSupportActionMode(new ModeCallback());
-                Toast.makeText(this, "a", Toast.LENGTH_SHORT).show();
             }
         }else {
             if(actionMode != null) {
                 actionMode.finish();
-                Toast.makeText(this, "b", Toast.LENGTH_SHORT).show();
             }
         }
         checked = savedGamesList.getCheckedItemPositions();
-        for(int i = 0; i < savedGamesList.getCount(); i++) {
-            Toast.makeText(getApplicationContext(), i+""+checked.get(i), Toast.LENGTH_SHORT).show();
-        }
     }
 
     private final class ModeCallback implements ActionMode.Callback {
@@ -184,12 +232,10 @@ public class SavedGamesActivity extends AppCompatActivity {
             switch(item.getItemId()) {
                 case R.id.delete:
                     SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
-                    Toast.makeText(getApplicationContext(), checked.get(0)+"test", Toast.LENGTH_SHORT).show();
                     Cursor cursor = ((CursorAdapter)savedGamesList.getAdapter()).getCursor();
                     cursor.moveToFirst();
                     int idIndex = cursor.getColumnIndex("_id");
                     for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
-                        Toast.makeText(getApplicationContext(), i+", "+checked.get(i), Toast.LENGTH_SHORT).show();
                         if(checked.get(i)) {
                             dbHelper.deleteMatch(cursor.getLong(idIndex));
                         }

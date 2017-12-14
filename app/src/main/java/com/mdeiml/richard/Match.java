@@ -9,6 +9,8 @@ public class Match {
     public static final byte SET_TIEBREAK = 1;
     public static final byte MATCH_TIEBREAK = 2;
 
+    public static final String[] POINT_NAMES = new String[] {"0", "15", "30", "40", "A"};
+
     public long matchId;
 
     public byte winner;
@@ -536,15 +538,12 @@ public class Match {
         public String[] stringScores() {
             byte[] totalPoints = totalPoints();
             if(tiebreak == NO_TIEBREAK) {
-                boolean deuce = false;
                 if(totalPoints[0] >= 4 && totalPoints[1] >= 4) {
                     byte pointsMax = (byte)Math.max(totalPoints[0], totalPoints[1]);
                     totalPoints[0] += 3 - pointsMax;
                     totalPoints[1] += 3 - pointsMax;
-                    deuce = true;
                 }
-                String[] lookup = new String[] {"0", "15", "30", "40", "A"};
-                return new String[] {lookup[totalPoints[0]], lookup[totalPoints[1]]};
+                return new String[] {POINT_NAMES[totalPoints[0]], POINT_NAMES[totalPoints[1]]};
             }else {
                 return new String[] {totalPoints[0]+"", totalPoints[1]+""};
             }

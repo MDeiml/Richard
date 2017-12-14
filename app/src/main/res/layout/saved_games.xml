@@ -19,7 +19,8 @@
             android:layout_margin="10dp"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:divider="@null"
+            android:divider="#00000000"
+            android:dividerHeight="10dp"
             android:id="@+id/saved_games_list" />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/new_game_button"
