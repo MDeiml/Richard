@@ -79,7 +79,7 @@ public class NewGameActivity extends AppCompatActivity {
         }
     }
     
-    private class PMeanDialog extends DialogFragment {
+    public class PMeanDialog extends DialogFragment {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -94,7 +94,7 @@ public class NewGameActivity extends AppCompatActivity {
                            float p = Float.parseFloat(pmeanInput.getText().toString());
                            SharedPreferences.Editor edit = pref.edit();
                            edit.putFloat("pmean", p);
-                           edit.commit();
+                           edit.apply();
                        }
                    })
                    .setNegativeButton("Abbruch", new DialogInterface.OnClickListener() {

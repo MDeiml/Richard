@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MatchFragment extends Fragment {
     
@@ -83,8 +84,8 @@ public class MatchFragment extends Fragment {
         double imp = getMatch().importance();
         double piP = p*100;
         double pjP = 100-piP;
-        propI.setText(String.format("%.1f", piP)+"%");
-        propJ.setText(String.format("%.1f", pjP)+"%");
+        propI.setText(String.format(Locale.getDefault(), "%.1f", piP)+"%");
+        propJ.setText(String.format(Locale.getDefault(), "%.1f", pjP)+"%");
         String[] stringScores = getMatch().getCurrentSet().getCurrentGame().stringScores();
         pointsI.setText(stringScores[0]);
         pointsJ.setText(stringScores[1]);
@@ -100,7 +101,7 @@ public class MatchFragment extends Fragment {
             gamesI1.setText(games[1][0]+"");
             gamesJ1.setText(games[1][1]+"");
         }
-        importance.setText(String.format("%.1f", imp*100)+"%");
+        importance.setText(String.format(Locale.getDefault(), "%.1f", imp*100)+"%");
         if(getMatch().servePoint()) {
             serveI.setVisibility(View.VISIBLE);
             serveJ.setVisibility(View.INVISIBLE);
