@@ -130,6 +130,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 				set.winner = (byte)setCursor.getInt(setWinnerIndex);
 				match.sets.add(set);
 			}
+            setCursor.close();
 
 			Cursor gameCursor = db.query("games",
 				new String[] {"game_set", "game_winner", "game_tiebreak"},
@@ -145,6 +146,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 				game.winner = (byte)gameCursor.getInt(gameWinnerIndex);
 				match.sets.get(gameCursor.getInt(gameSetIndex)).games.add(game);
 			}
+            gameCursor.close();
 
 			Cursor pointCursor = db.query("points",
 				new String[] {"point_set", "point_game", "point_winner", "point_server", "point_winprob", "point_importance"},
@@ -165,6 +167,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 				point.importance = (float)pointCursor.getDouble(pointImportanceIndex);
 				match.sets.get(pointCursor.getInt(pointSetIndex)).games.get(pointCursor.getInt(pointGameIndex)).points.add(point);
 			}
+            pointCursor.close();
 
 			return match;
 		}

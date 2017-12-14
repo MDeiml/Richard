@@ -79,12 +79,12 @@ public class NewGameActivity extends AppCompatActivity {
         }
     }
     
-    public class PMeanDialog extends DialogFragment {
+    public static class PMeanDialog extends DialogFragment {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final SharedPreferences pref = getSharedPreferences("com.mdeiml.richard.PREFS", MODE_PRIVATE);
-            AlertDialog.Builder builder = new AlertDialog.Builder(NewGameActivity.this);
+            final SharedPreferences pref = getContext().getSharedPreferences("com.mdeiml.richard.PREFS", MODE_PRIVATE);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View v = inflater.inflate(R.layout.pmean_dialog, null);
             builder.setView(v)
