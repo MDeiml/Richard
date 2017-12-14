@@ -1,8 +1,8 @@
 <com.mdeiml.richard.Card xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
     <TableLayout
+        android:layout_margin="10dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:elevation="2dp">
