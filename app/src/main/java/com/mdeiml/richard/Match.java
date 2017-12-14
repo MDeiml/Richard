@@ -13,6 +13,7 @@ public class Match {
 
     public long matchId;
 
+    public final long startTime;
     public byte winner;
     public final ArrayList<Set> sets;
     public final String player1;
@@ -31,10 +32,11 @@ public class Match {
     private RealMatrix matM;
 
     public Match(String player1, String player2, double p1, double p2) {
-        this(player1, player2, p1, p2, -1);
+        this(player1, player2, p1, p2, System.currentTimeMillis(), -1);
     }
 
-    public Match(String player1, String player2, double p1, double p2, long matchId) {
+    public Match(String player1, String player2, double p1, double p2, long startTime, long matchId) {
+        this.startTime = startTime;
         this.player1 = player1;
         this.player2 = player2;
         this.winner = 0;

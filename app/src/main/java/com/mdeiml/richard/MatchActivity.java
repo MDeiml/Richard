@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
+import android.support.v4.app.NavUtils;
 
 public class MatchActivity extends AppCompatActivity {
 
@@ -130,6 +131,13 @@ public class MatchActivity extends AppCompatActivity {
         Log.i("MatchActivity", "Match saved");
         dbHelper.saveMatch(match);
         outState.putLong("match", match.matchId);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.i("MatchActivity", "Match saved");
+        dbHelper.saveMatch(match);
+        NavUtils.navigateUpFromSameTask(this);
     }
     
 }

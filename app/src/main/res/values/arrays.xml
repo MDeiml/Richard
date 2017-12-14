@@ -4,6 +4,7 @@
         <item>
 CREATE TABLE matches (
     match_id INTEGER NOT NULL,
+    match_start INTEGER NOT NULL,
     match_player1 TEXT,
     match_player2 TEXT,
     match_winner INTEGER NOT NULL,
