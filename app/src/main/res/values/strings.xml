@@ -3,4 +3,19 @@
 
     <string name="app_name">Richard</string>
 
+    <string name="delete">Löschen</string>
+    <string name="undo">Zurück</string>
+    <string name="save_game">Spiel speichern</string>
+    <string name="point_seperator"> - </string>
+    <string name="settings">Einstellungen</string>
+    <string name="names">Namen</string>
+    <string name="player1Hint">Spieler A</string>
+    <string name="player2Hint">Spieler B</string>
+    <string name="winprob">Gewinnwahrscheinlichkeit</string>
+    <string name="start">Start</string>
+    <string name="importance">Importance</string>
+    <string name="points_per_importance">Punkte / Importance</string>
+    <string name="serve_points">Aufschlagspunkte</string>
+    <string name="breaks">Breaks</string>
+
 </resources>

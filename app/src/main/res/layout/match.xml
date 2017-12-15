@@ -4,18 +4,15 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
+        style="@style/RichardToolbar"
         android:id="@+id/toolbar"
         android:layout_width="fill_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:layout_height="?attr/actionBarSize" />
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        app:elevation="4dp"
+        android:elevation="4dp"
         android:background="?attr/colorPrimary"
         app:tabIndicatorColor="#ffffff"
         app:tabTextColor="#eeeeee"

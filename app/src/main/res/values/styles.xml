@@ -2,9 +2,23 @@
 <resources>
     <!--   Indigo   -->
     <style name="RichardTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#3f51b5</item>
-        <item name="colorPrimaryDark">#303f9f</item>
-        <item name="colorAccent">#536dfe</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
         <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">@color/backgroundDark</item>
+        <item name="android:colorBackground">@color/backgroundDark</item>
 	</style>
+
+    <style name="RichardTheme.LightBackground">
+        <item name="android:windowBackground">@color/backgroundLight</item>
+        <item name="android:colorBackground">@color/backgroundLight</item>
+    </style>
+
+    <style name="RichardToolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
 </resources>

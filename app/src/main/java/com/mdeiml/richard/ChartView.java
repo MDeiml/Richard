@@ -10,8 +10,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import java.util.ArrayList;
 import android.util.Log;
-import java.util.TreeSet;
-import java.util.Iterator;
+import java.util.Locale;
 
 public class ChartView extends View {
 
@@ -31,6 +30,9 @@ public class ChartView extends View {
     private String labelB;
     private Match match;
     private int type;
+
+    private int[] data;
+    private int[] ns;
     
     public ChartView(Context c, AttributeSet attr) {
         super(c, attr);
@@ -73,6 +75,9 @@ public class ChartView extends View {
         labelA = "";
         labelB = "";
         type = TYPE_WINPROB;
+
+        data = new int[IMPORTANCE_WIN_PARTS];
+        ns = new int[IMPORTANCE_WIN_PARTS];
     }
 
     @Override
@@ -158,64 +163,32 @@ public class ChartView extends View {
                     }
                 }
             }else if(type == TYPE_IMPORTANCE_WIN) {
-                TreeSet<Float> imps = new TreeSet<Float>();
+                float minImp = 10000;
+                float maxImp = 0;
+                int n = 0;
                 for(Match.Set set : match.sets) {
                     for(Match.Game game : set.games) {
                         for(Match.Point point : game.points) {
-                            if(point.winner != 0) imps.add(point.importance);
+                            if(point.winner != 0) {
+                                minImp = Math.min(minImp, point.importance);
+                                maxImp = Math.max(maxImp, point.importance);
+                                n++;
+                            }
                         }
                     }
                 }
-                int size = imps.size();
-                int n = Math.min(size, IMPORTANCE_WIN_PARTS);
+                n = Math.min(n, IMPORTANCE_WIN_PARTS);
                 if(n > 0) {
-                    float minImp = imps.first();
-                    float maxImp = imps.last();
-                    Log.i("ChartView", n + ", " + minImp + ", " + maxImp);
-                    float[] imps0 = new float[size];
-                    int index = 0;
-                    for(Iterator<Float> it = imps.iterator(); it.hasNext();) {
-                        imps0[index++] = it.next();
-                    }
-                    float[] scale = new float[n];
-                    int j = 0;
-                    /*
-                    for(int i = 0; i < n; i++) {
-                        float val = minImp + i * (maxImp - minImp);
-                        boolean b = false;
-                        while(size - j > n - i && imps0[j] < val) {
-                            j++;
-                            b = true;
-                        }
-                        if(b) {
-                            if(Math.abs(imps0[j-1] - val) < Math.abs(imps0[j] - val)) {
-                                scale[i] = imps0[j-1];
-                            }else {
-                                scale[i] = imps0[j];
-                                j++;
-                            }
-                        }else {
-                            scale[i] = imps0[j];
-                            j++;
-                        }
-                    }/*/
-                    for(int i = 0; i < n; i++) {
-                        scale[i] = minImp + (maxImp - minImp) * i / (n - 1);
-                    }
-                    //*/
-                    int[] data = new int[n];
-                    int[] ns = new int[n];
+                    float scale = (maxImp - minImp) / (n - 1);
                     int maxN = 0;
                     for(Match.Set set : match.sets) {
                         for(Match.Game game : set.games) {
                             for(Match.Point point : game.points) {
-                                for(int i = 0; i < n; i++) {
-                                    if(i == n - 1 || Math.abs(scale[i+1] - point.importance) >= Math.abs(scale[i] - point.importance)) {
-                                        if(point.winner == 1) data[i]++;
-                                        if(point.winner != 0) ns[i]++;
-                                        maxN = Math.max(Math.max(maxN, data[i]), ns[i] - data[i]);
-                                        break;
-                                    }
+                                if(point.winner != 0) {
+                                    int i = Math.round((point.importance - minImp) / scale);
+                                    if(point.winner == 1) data[i]++;
+                                    ns[i]++;
+                                    maxN = Math.max(Math.max(maxN, data[i]), ns[i] - data[i]);
                                 }
                             }
                         }
@@ -242,7 +215,7 @@ public class ChartView extends View {
                         int y2 = Math.max(2, (int)(val2 * h));
                         canvas.drawRect(ls + x0, ys + h, ls + x1, ys + h - y1, redPaint);
                         canvas.drawRect(ls + x2, ys + h, ls + x3, ys + h - y2, bluePaint);
-                        canvas.drawText((int)(scale[i]*1000)/10f+"%", ls + xt, ys + h + 2 * halfText, scalePaint);
+                        canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", scale*i), ls + xt, ys + h + 2 * halfText, scalePaint);
                     }
                 }else {
                     int nlines = 4;

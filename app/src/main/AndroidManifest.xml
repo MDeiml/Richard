@@ -20,6 +20,7 @@
         <activity
             android:name=".NewGameActivity"
             android:label="@string/app_name"
+            android:theme="@style/RichardTheme.LightBackground"
             android:configChanges="orientation|screenSize">
         </activity>
         <activity

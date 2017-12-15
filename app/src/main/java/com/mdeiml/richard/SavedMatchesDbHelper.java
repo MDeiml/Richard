@@ -115,6 +115,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
                 matchCursor.getLong(startIndex),
 				matchId
 			);
+            matchCursor.close();
 			match.sets.clear();
 
 			Cursor setCursor = db.query("sets",
@@ -171,6 +172,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
 			return match;
 		}
+        matchCursor.close();
 		return null;
 	}
 

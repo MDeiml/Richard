@@ -20,6 +20,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
+import java.util.Locale;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -119,7 +120,7 @@ public class SavedGamesActivity extends AppCompatActivity {
                 int winnerIndex = setCursor.getColumnIndex("game_winner");
 
                 while(setCursor.moveToNext()) {
-                    sgSets[setCursor.getInt(winnerIndex)-1][setCursor.getInt(setIndex)].setText(setCursor.getInt(countIndex)+"");
+                    sgSets[setCursor.getInt(winnerIndex)-1][setCursor.getInt(setIndex)].setText(String.format(Locale.getDefault(), "%d", setCursor.getInt(countIndex)));
                 }
 
                 setCursor.close();
@@ -172,8 +173,8 @@ public class SavedGamesActivity extends AppCompatActivity {
                             sgPoints1.setText(Match.POINT_NAMES[points1]);
                             sgPoints2.setText(Match.POINT_NAMES[points2]);
                         }else {
-                            sgPoints1.setText(points1+"");
-                            sgPoints2.setText(points2+"");
+                            sgPoints1.setText(String.format(Locale.getDefault(), "%d", points1));
+                            sgPoints2.setText(String.format(Locale.getDefault(), "%d", points2+""));
                         }
                     }
                 }

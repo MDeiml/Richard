@@ -4,6 +4,7 @@ import android.widget.Checkable;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.support.v7.widget.CardView;
+import android.support.v4.content.ContextCompat;
 
 public class Card extends CardView implements Checkable {
     
@@ -11,13 +12,13 @@ public class Card extends CardView implements Checkable {
     
     public Card(Context c, AttributeSet attr) {
         super(c, attr);
-        setCardBackgroundColor(R.drawable.card_background);
+        setCardBackgroundColor(ContextCompat.getColor(getContext(), R.color.backgroundLight));
         checked = false;
     }
     
     @Override
     public void setChecked(boolean p1) {
-        setCardBackgroundColor(getContext().getColor(p1 ? R.color.card_background_selected : R.color.card_background));
+        setCardBackgroundColor(ContextCompat.getColor(getContext(), p1 ? R.color.card_background_selected : R.color.backgroundLight));
         checked = p1;
     }
 

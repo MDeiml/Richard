@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import java.util.Locale;
 
 public class StatisticsFragment extends Fragment {
 
@@ -41,13 +42,13 @@ public class StatisticsFragment extends Fragment {
             chartImp.drawMatch(getMatch());
             chartImpWin.drawMatch(getMatch());
             int[] points = getMatch().totalPoints();
-            String perc1 = points[2] + points[5] > 0 ? (100 * points[2] / (points[2] + points[5])) + "" : "-";
-            serves1.setText(points[2]+" ("+perc1+"%)");
-            String perc2 = points[4] + points[3] > 0 ? (100 * points[4] / (points[4] + points[3])) + "" : "-";
-            serves2.setText(points[4]+" ("+perc2+"%)");
+            String perc1 = points[2] + points[5] > 0 ? String.format(Locale.getDefault(), "%d", 100 * points[2] / (points[2] + points[5])) : "-";
+            serves1.setText(String.format(Locale.getDefault(), "%d (%s%%)", points[2], perc1));
+            String perc2 = points[4] + points[3] > 0 ? String.format(Locale.getDefault(), "%d", 100 * points[4] / (points[4] + points[3])) : "-";
+            serves2.setText(String.format(Locale.getDefault(), "%d (%s%%)", points[4], perc2));
             int[] breaks = getMatch().breaks();
-            breaks1.setText(breaks[0]+"");
-            breaks2.setText(breaks[1]+"");
+            breaks1.setText(String.format(Locale.getDefault(), "%d", breaks[0]));
+            breaks2.setText(String.format(Locale.getDefault(), "%d", breaks[1]));
         }
     }
 

@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View.OnClickListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.support.v7.widget.Toolbar;
+import java.util.Locale;
 
 public class NewGameActivity extends AppCompatActivity {
     
@@ -44,9 +45,10 @@ public class NewGameActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar p1) {
             }
 
+            @Override
             public void onProgressChanged(SeekBar s, int progress, boolean b) {
-                matchPropI.setText(progress+"%");
-                matchPropJ.setText((100-progress)+"%");
+                matchPropI.setText(String.format(Locale.getDefault(), "%d%%", progress));
+                matchPropJ.setText(String.format(Locale.getDefault(), "%d%%", (100-progress)));
             }
         });
         start.setOnClickListener(new OnClickListener() {
