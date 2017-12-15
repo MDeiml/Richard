@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="tab_titles">
+        <item>Match</item>
+        <item>Statistiken</item>
+    </string-array>
+
     <string-array name="sql_create_database">
         <item>
 CREATE TABLE matches (

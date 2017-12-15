@@ -90,6 +90,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
                     <TextView
+                        android:id="@+id/stats_label_serves1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
@@ -110,6 +111,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
                     <TextView
+                        android:id="@+id/stats_label_serves2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
@@ -130,6 +132,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
                     <TextView
+                        android:id="@+id/stats_label_breaks1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
@@ -150,6 +153,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
                     <TextView
+                        android:id="@+id/stats_label_breaks2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"

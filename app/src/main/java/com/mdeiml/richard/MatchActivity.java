@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,11 +23,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
-import android.support.v4.app.NavUtils;
 
 public class MatchActivity extends AppCompatActivity {
-
-    public static final String[] tabTitles = new String[]{"Match", "Statistiken"};
     
     private SavedMatchesDbHelper dbHelper;
     private Match match;
@@ -86,7 +85,7 @@ public class MatchActivity extends AppCompatActivity {
 
             @Override
             public String getPageTitle(int i) {
-                return tabTitles[i];
+                return getApplicationContext().getResources().getStringArray(R.array.tab_titles)[i];
             }
         });
 

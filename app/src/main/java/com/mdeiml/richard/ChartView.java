@@ -104,9 +104,9 @@ public class ChartView extends View {
                 for(int i = 1; i <= n; i++) {
                     int y = i*h/n/2;
                     canvas.drawLine(ls, ys+h/2+y, ls+w, ys+h/2+y, indicatorPaint);
-                    canvas.drawText((50*i/n+50)+"% ", ls, ys+h/2+y+halfText, textPaint);
+                    canvas.drawText(String.format(Locale.getDefault(), "%d%% ", 50*i/n+50), ls, ys+h/2+y+halfText, textPaint);
                     canvas.drawLine(ls, ys+h/2-y, ls+w, ys+h/2-y, indicatorPaint);
-                    canvas.drawText((50*i/n+50)+"% ", ls, ys+h/2-y+halfText, textPaint);
+                    canvas.drawText(String.format(Locale.getDefault(), "%d%% ", 50*i/n+50), ls, ys+h/2-y+halfText, textPaint);
                 }
                 break;
             }
@@ -117,7 +117,7 @@ public class ChartView extends View {
                 for(int i = 1; i <= n; i++) {
                     int y = i*h/n;
                     canvas.drawLine(ls, ys+h-y, ls+w, ys+h-y, indicatorPaint);
-                    canvas.drawText((20*i/n)+"% ", ls, ys+h-y+halfText, textPaint);
+                    canvas.drawText(String.format(Locale.getDefault(), "%d%% ", 20*i/n), ls, ys+h-y+halfText, textPaint);
                 }
                 break;
             }
@@ -200,7 +200,7 @@ public class ChartView extends View {
                         int val = maxN*i/nlines;
                         int y = val*h/maxN;
                         canvas.drawLine(ls, ys+h-y, ls+w, ys+h-y, indicatorPaint);
-                        canvas.drawText(val+"", ls, ys+h-y+halfText, textPaint);
+                        canvas.drawText(String.format(Locale.getDefault(), "%d", val), ls, ys+h-y+halfText, textPaint);
                     }
                     float entryWidth = w / n;
                     for(int i = 0; i < n; i++) {
@@ -225,7 +225,7 @@ public class ChartView extends View {
                         int val = i;
                         int y = val*h/nlines;
                         canvas.drawLine(ls, ys+h-y, ls+w, ys+h-y, indicatorPaint);
-                        canvas.drawText(i+"", ls, ys+h-y+halfText, textPaint);
+                        canvas.drawText(String.format(Locale.getDefault(), "%d", i), ls, ys+h-y+halfText, textPaint);
                     }
                 }
             }
