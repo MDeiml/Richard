@@ -1,65 +1,63 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
     android:gravity="center"
     android:padding="10dp"
     android:clipToPadding="false">
     <android.support.v7.widget.CardView
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/buttons_layout"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
         android:layout_marginBottom="10dp"
         android:background="@color/backgroundLight" >
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:padding="10dp"
-            android:orientation="vertical" >
+            android:padding="10dp" >
             <com.mdeiml.richard.ChartView
                 android:id="@+id/match_chart"
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:padding="10dp" />
+                android:layout_height="200dp"
+                android:padding="10dp"
+                android:layout_marginBottom="20dp" />
             <LinearLayout
+                android:id="@+id/points_layout"
+                android:layout_below="@id/match_chart"
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/propI"
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="30dp"/>
-                    <TextView
-                        android:id="@+id/propJ"
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="30dp"/>
-                </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/importance"
-                    android:layout_width="fill_parent"
-                    android:layout_height="15dp"
-                    android:textSize="10dp"
-                    android:gravity="center"/>
+                    android:id="@+id/propI"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="30sp"/>
+                <TextView
+                    android:id="@+id/propJ"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="30sp"/>
             </LinearLayout>
+            <TextView
+                android:id="@+id/importance"
+                android:layout_below="@id/points_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:padding="3dp"
+                android:gravity="center"/>
             <LinearLayout
+                android:baselineAligned="false"
+                android:layout_below="@id/importance"
+                android:layout_alignParentBottom="true"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="2"
                 android:orientation="horizontal"
                 android:layout_marginBottom="5dp" >
                 <LinearLayout
@@ -86,19 +84,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp" />
+                            android:textSize="20sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp"
+                            android:textSize="20sp"
                             android:text="@string/point_seperator" />
                         <TextView
                             android:id="@+id/gamesJ0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp" />
+                            android:textSize="20sp" />
                     </TableRow>
                     <TableRow
                         android:id="@+id/set1">
@@ -107,19 +105,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp" />
+                            android:textSize="20sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp"
+                            android:textSize="20sp"
                             android:text="@string/point_seperator" />
                         <TextView
                             android:id="@+id/gamesJ1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp" />
+                            android:textSize="20sp" />
                     </TableRow>
                     <TableRow>
                         <TextView
@@ -127,18 +125,18 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp" />
+                            android:textSize="20sp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="20dp"
+                            android:textSize="20sp"
                             android:text="@string/point_seperator" />
                         <TextView
                             android:id="@+id/pointsJ"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="20dp"
+                            android:textSize="20sp"
                             android:gravity="center" />
                     </TableRow>
                 </TableLayout>
@@ -155,12 +153,13 @@
                         android:src="@drawable/ic_tennis_grey600_48dp" />
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+        </RelativeLayout>>
     </android.support.v7.widget.CardView>
     <LinearLayout
+        android:id="@+id/buttons_layout"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_height="120dp"
         android:orientation="horizontal">
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/buttonI"
@@ -177,4 +176,4 @@
             android:layout_weight="1"
             android:layout_height="fill_parent" />
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>
