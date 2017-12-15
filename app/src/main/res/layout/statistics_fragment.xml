@@ -71,7 +71,10 @@
                     android:text="@string/points_per_importance" />
                 <com.mdeiml.richard.ChartView
                     android:id="@+id/chart_impwin"
-                    android:padding="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="15dp"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent" />
             </LinearLayout>

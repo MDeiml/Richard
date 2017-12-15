@@ -18,13 +18,15 @@
             android:padding="10dp" >
             <com.mdeiml.richard.ChartView
                 android:id="@+id/match_chart"
+                android:layout_alignParentTop="true"
+                android:layout_above="@id/probs_layout"
                 android:layout_width="fill_parent"
-                android:layout_height="200dp"
+                android:layout_height="0dp"
                 android:padding="10dp"
                 android:layout_marginBottom="20dp" />
             <LinearLayout
-                android:id="@+id/points_layout"
-                android:layout_below="@id/match_chart"
+                android:id="@+id/probs_layout"
+                android:layout_above="@id/importance"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -46,27 +48,27 @@
             </LinearLayout>
             <TextView
                 android:id="@+id/importance"
-                android:layout_below="@id/points_layout"
+                android:layout_above="@id/points_layout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:padding="3dp"
                 android:gravity="center"/>
             <LinearLayout
+                android:id="@+id/points_layout"
                 android:baselineAligned="false"
-                android:layout_below="@id/importance"
                 android:layout_alignParentBottom="true"
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="5dp" >
                 <LinearLayout
                     android:id="@+id/serveI"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="fill_parent">
+                    android:layout_width="0dp"
+                    android:layout_height="0dp">
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -76,7 +78,7 @@
                     android:stretchColumns="0,2"
                     android:gravity="center"
                     android:layout_width="0dp"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="2">
                     <TableRow>
                         <TextView
@@ -144,9 +146,9 @@
                     android:id="@+id/serveJ"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="fill_parent" >
+                    android:layout_width="0dp"
+                    android:layout_height="0dp" >
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

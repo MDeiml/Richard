@@ -18,7 +18,7 @@ public class ChartView extends View {
     public static final int TYPE_IMPORTANCE = 2;
     public static final int TYPE_IMPORTANCE_WIN = 3;
 
-    private static final int IMPORTANCE_WIN_PARTS = 10;
+    private static final int IMPORTANCE_WIN_PARTS = 6;
    
     private Paint bluePaint;
     private Paint redPaint;
@@ -215,7 +215,7 @@ public class ChartView extends View {
                         int y2 = Math.max(2, (int)(val2 * h));
                         canvas.drawRect(ls + x0, ys + h, ls + x1, ys + h - y1, redPaint);
                         canvas.drawRect(ls + x2, ys + h, ls + x3, ys + h - y2, bluePaint);
-                        canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", scale*i), ls + xt, ys + h + 2 * halfText, scalePaint);
+                        canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", scale*i*100), ls + xt, ys + h + 2 * halfText, scalePaint);
                     }
                 }else {
                     int nlines = 4;
@@ -225,7 +225,7 @@ public class ChartView extends View {
                         int val = i;
                         int y = val*h/nlines;
                         canvas.drawLine(ls, ys+h-y, ls+w, ys+h-y, indicatorPaint);
-                        canvas.drawText(String.format(Locale.getDefault(), "%d", i), ls, ys+h-y+halfText, textPaint);
+                        canvas.drawText(String.format(Locale.getDefault(), "%d ", i), ls, ys+h-y+halfText, textPaint);
                     }
                 }
             }
