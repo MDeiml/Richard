@@ -4,11 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,15 +21,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.util.Log;
 import java.util.Locale;
-import android.support.v4.content.Loader;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.net.Uri;
 
 public class SavedGamesActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
@@ -52,8 +53,9 @@ public class SavedGamesActivity extends AppCompatActivity implements LoaderCallb
         });
 
         savedGamesList = (ListView)findViewById(R.id.saved_games_list);
-        savedGamesList.setItemsCanFocus(false);
+        savedGamesList.setItemsCanFocus(true);
         savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
         adapter = new CursorAdapter(this, null, false) {
             public void bindView(View view, Context context, Cursor cursor) {
                 final int idIndex = cursor.getColumnIndex("_id");
