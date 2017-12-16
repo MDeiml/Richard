@@ -44,11 +44,13 @@ public class ChartView extends View {
         bluePaint.setColor(0xff4285f4);
         bluePaint.setStrokeWidth(2*dpr);
         bluePaint.setAntiAlias(true);
+        bluePaint.setStrokeCap(Paint.Cap.ROUND);
 
         redPaint = new Paint();
         redPaint.setColor(0xffdb4437);
         redPaint.setStrokeWidth(2*dpr);
         redPaint.setAntiAlias(true);
+        redPaint.setStrokeCap(Paint.Cap.ROUND);
         
         axisPaint = new Paint();
         axisPaint.setColor(0xff888888);
