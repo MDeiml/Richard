@@ -21,13 +21,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
 import java.util.Locale;
+import android.support.v4.content.Loader;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.net.Uri;
 
-public class SavedGamesActivity extends AppCompatActivity {
+public class SavedGamesActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     private ListView savedGamesList;
     private SavedMatchesDbHelper dbHelper;
     private FloatingActionButton newGameButton;
     private ActionMode actionMode;
+    private CursorAdapter adapter;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +40,8 @@ public class SavedGamesActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        dbHelper = new SavedMatchesDbHelper(this);
 
         newGameButton = (FloatingActionButton)findViewById(R.id.new_game_button);
         newGameButton.setOnClickListener(new View.OnClickListener() {
@@ -44,18 +51,14 @@ public class SavedGamesActivity extends AppCompatActivity {
             }
         });
 
-        dbHelper = new SavedMatchesDbHelper(this);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query("matches", new String[] {"match_id AS _id", "match_player1", "match_player2"}, null, null, null, null, "match_id");
-        final int idIndex = cursor.getColumnIndex("_id");
-        final int player1Index = cursor.getColumnIndex("match_player1");
-        final int player2Index = cursor.getColumnIndex("match_player2");
-
         savedGamesList = (ListView)findViewById(R.id.saved_games_list);
         savedGamesList.setItemsCanFocus(false);
         savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        savedGamesList.setAdapter(new CursorAdapter(this, cursor) {
+        adapter = new CursorAdapter(this, null, false) {
             public void bindView(View view, Context context, Cursor cursor) {
+                final int idIndex = cursor.getColumnIndex("_id");
+                final int player1Index = cursor.getColumnIndex("match_player1");
+                final int player2Index = cursor.getColumnIndex("match_player2");
                 final long matchId = cursor.getLong(idIndex);
                 final int position = cursor.getPosition();
                 view.setOnClickListener(new View.OnClickListener() {
@@ -184,7 +187,25 @@ public class SavedGamesActivity extends AppCompatActivity {
                 LayoutInflater inflater = LayoutInflater.from(context);
                 return inflater.inflate(R.layout.saved_game, parent, false);
             }
-        });
+        };
+        savedGamesList.setAdapter(adapter);
+        getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri matchUri = Uri.parse("content://com.mdeiml.richard.provider/matches");
+        return new CursorLoader(this, matchUri, new String[] {"match_id AS _id", "match_player1", "match_player2"}, null, null, "match_id ASC");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        adapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        adapter.swapCursor(null);
     }
     
     private void updateAdapter() {

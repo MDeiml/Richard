@@ -32,6 +32,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mdeiml.richard.SavedGamesActivity" />
         </activity>
+        <provider
+            android:name=".MatchProvider"
+            android:authorities="com.mdeiml.richard.provider"
+            android:exported="false" />
     </application>
 
 </manifest>
