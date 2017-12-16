@@ -52,9 +52,9 @@ public class SavedGamesActivity extends AppCompatActivity {
         final int player2Index = cursor.getColumnIndex("match_player2");
 
         savedGamesList = (ListView)findViewById(R.id.saved_games_list);
-        savedGamesList.setItemsCanFocus(false);
+        savedGamesList.setItemsCanFocus(true);
         savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        savedGamesList.setAdapter(new CursorAdapter(this, cursor) {
+        savedGamesList.setAdapter(new CursorAdapter(this, cursor, false) {
             public void bindView(View view, Context context, Cursor cursor) {
                 final long matchId = cursor.getLong(idIndex);
                 final int position = cursor.getPosition();
