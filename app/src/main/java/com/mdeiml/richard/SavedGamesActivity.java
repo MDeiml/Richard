@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -21,6 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.util.Log;
 import java.util.Locale;
+import android.view.ActionMode;
+import android.widget.AdapterView;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -52,34 +53,57 @@ public class SavedGamesActivity extends AppCompatActivity {
         final int player2Index = cursor.getColumnIndex("match_player2");
 
         savedGamesList = (ListView)findViewById(R.id.saved_games_list);
-        savedGamesList.setItemsCanFocus(true);
-        savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        savedGamesList.setItemsCanFocus(false);
+        savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        savedGamesList.setMultiChoiceModeListener(new ListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {}
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.delete:
+                        long[] checkedIds = savedGamesList.getCheckedItemIds();
+
+                        for(int i = 0; i < checkedIds.length; i++) {
+                            Log.i("Richard", "Deleting " + checkedIds[i]);
+                            dbHelper.deleteMatch(checkedIds[i]);
+                        }
+                        break;
+                }
+                mode.finish();
+                updateAdapter();
+                return true;
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.games_context_menu, menu);
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {}
+
+            @Override 
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+        });
+        savedGamesList.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getApplicationContext(), MatchActivity.class);
+                i.putExtra("match_id", id);
+                startActivity(i);
+            }
+        });
         savedGamesList.setAdapter(new CursorAdapter(this, cursor, false) {
             public void bindView(View view, Context context, Cursor cursor) {
                 final long matchId = cursor.getLong(idIndex);
                 final int position = cursor.getPosition();
-                view.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        if(actionMode == null) {
-                            Intent i = new Intent(getApplicationContext(), MatchActivity.class);
-                            i.putExtra("match_id", matchId);
-                            startActivity(i);
-                        }else {
-                            SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
-                            savedGamesList.setItemChecked(position, !checked.get(position));
-                            updateActionMode();
-                        }
-                    }
-                });
-                view.setOnLongClickListener(new View.OnLongClickListener() {
-                    public boolean onLongClick(View v) {
-                        SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
-                        savedGamesList.setItemChecked(position, !checked.get(position));
-                        updateActionMode();
-                        return true;
-                    }
-                });
-
                 TextView sgPlayer1 = (TextView)view.findViewById(R.id.saved_game_player1);
                 TextView sgPlayer2 = (TextView)view.findViewById(R.id.saved_game_player2);
                 TextView[][] sgSets = new TextView[][] {
@@ -192,73 +216,5 @@ public class SavedGamesActivity extends AppCompatActivity {
         Cursor cursor = db.query("matches", new String[] {"match_id AS _id", "match_player1", "match_player2"}, null, null, null, null, "match_id");
         ((CursorAdapter)savedGamesList.getAdapter()).changeCursor(cursor);
     }
-
-    private void updateActionMode() {
-        SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
-        boolean hasCheckedItem = false;
-        for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
-            if(checked.get(i)) {
-                hasCheckedItem = true;
-                break;
-            }
-        }
-
-        if(hasCheckedItem) {
-            if(actionMode == null) {
-                actionMode = startSupportActionMode(new ModeCallback());
-            }
-        }else {
-            if(actionMode != null) {
-                actionMode.finish();
-            }
-        }
-        checked = savedGamesList.getCheckedItemPositions();
-    }
-
-    private final class ModeCallback implements ActionMode.Callback {
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.games_context_menu, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch(item.getItemId()) {
-                case R.id.delete:
-                    SparseBooleanArray checked = savedGamesList.getCheckedItemPositions();
-                    Cursor cursor = ((CursorAdapter)savedGamesList.getAdapter()).getCursor();
-                    cursor.moveToFirst();
-                    int idIndex = cursor.getColumnIndex("_id");
-                    for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
-                        if(checked.get(i)) {
-                            dbHelper.deleteMatch(cursor.getLong(idIndex));
-                        }
-                        cursor.moveToNext();
-                    }
-                    break;
-            }
-            actionMode.finish();
-            updateAdapter();
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            for(int i = 0; i < savedGamesList.getAdapter().getCount(); i++) {
-                savedGamesList.setItemChecked(i, false);
-            }
-            if(actionMode == mode) {
-                actionMode = null;
-            }
-            updateActionMode();
-        }
-    };
 
 }
