@@ -32,13 +32,6 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:id="@+id/saved_game_set31" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
                 android:id="@+id/saved_game_points1" />
         </TableRow>
         <TableRow>
@@ -62,13 +55,6 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:id="@+id/saved_game_set22" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:id="@+id/saved_game_set32" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"

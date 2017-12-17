@@ -2,6 +2,7 @@ package com.mdeiml.richard;
 
 import java.util.ArrayList;
 import org.apache.commons.math3.linear.RealMatrix;
+import android.util.Log;
 
 public class Match {
 
@@ -13,6 +14,8 @@ public class Match {
 
     public long matchId;
 
+    private int numSets;
+    private boolean matchTiebreak;
     public final long startTime;
     public byte winner;
     public final ArrayList<Set> sets;
@@ -47,6 +50,8 @@ public class Match {
         Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
         p.winProb = calcWinProb();
         p.importance = calcImportance();
+        numSets = 3;
+        matchTiebreak = true;
     }
 
     public int getCurrentSetNr() {
@@ -82,7 +87,7 @@ public class Match {
         matT2 = MarkovMatrix.getSetTiebreakPropabilities(p2, p1);
         matS1 = MarkovMatrix.getSetPropabilities(matG1.getEntry(0, 0), matG2.getEntry(0, 0), matT1.getEntry(0, 0));
         matS2 = MarkovMatrix.getSetPropabilities(matG2.getEntry(0, 0), matG1.getEntry(0, 0), matT1.getEntry(0, 0));
-        matM = MarkovMatrix.getMatchPropabilities(matS1.getEntry(0, 0), matMT1.getEntry(0, 0));
+        matM = MarkovMatrix.getMatchPropabilities(matS1.getEntry(0, 0), matMT1.getEntry(0, 0), 3, true);
         this.p1 = p1;
         this.p2 = p2;
     }
@@ -96,9 +101,9 @@ public class Match {
             return winner;
         }
         byte[] totalSets = totalSets();
-        if(totalSets[0] == 2) {
+        if(totalSets[0] == numSets / 2 + 1) {
             winner = 1;
-        }else if(totalSets[1] == 2) {
+        }else if(totalSets[1] == numSets / 2 + 1) {
             winner = 2;
         }
         return winner;
@@ -149,17 +154,19 @@ public class Match {
     }
 
     private byte point(byte player, boolean calcStatistics) {
+        byte w1 = getWinner();
+        if(w1 != 0) {
+            return w1;
+        }
         byte w = getCurrentSet().point(player);
-        byte w1 = 0;
         if(w != 0) {
             w1 = getWinner();
-            if(w1 == 0) {
-                byte[] totalSets = totalSets();
-                boolean t = totalSets[0] == 1 && totalSets[1] == 1;
-                byte server = getCurrentSet().getCurrentGame().getCurrentPoint().server;
-                server = server == 1 ? (byte)2 : (byte)1;
-                sets.add(new Set(t ? MATCH_TIEBREAK : NO_TIEBREAK, server));
-            }
+            // new set even if match is won for easier logic
+            byte[] totalSets = totalSets();
+            boolean t = matchTiebreak && totalSets[0] == numSets / 2 && totalSets[1] == numSets / 2;
+            byte server = getCurrentSet().getCurrentGame().getCurrentPoint().server;
+            server = server == 1 ? (byte)2 : (byte)1;
+            sets.add(new Set(t ? MATCH_TIEBREAK : NO_TIEBREAK, server));
         }
         if(calcStatistics) {
             Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
@@ -173,6 +180,7 @@ public class Match {
         if(getCurrentSet().getCurrentGame().getCurrentPoint() == sets.get(0).games.get(0).points.get(0)) {
             return false;
         }
+        winner = 0;
         if(getCurrentSet().removePoint()) {
             sets.remove(sets.size()-1);
             getCurrentSet().getCurrentGame().getCurrentPoint().winner = 0;

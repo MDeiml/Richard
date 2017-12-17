@@ -97,17 +97,44 @@ public class MarkovMatrix {
         return getPropabilities(r, q);
     }
     
-    public static RealMatrix getMatchPropabilities(double si, double mi) {
-        RealMatrix q = MatrixUtils.createRealMatrix(4, 4);
-        q.setEntry(0, 1, 1-si); // 0-0 -> 0-1
-        q.setEntry(0, 2, si); // 0-0 -> 1-0
-        q.setEntry(1, 3, si); // 0-1 -> 1-1
-        q.setEntry(2, 3, 1-si); // 1-0 -> 1-1
-        RealMatrix r = MatrixUtils.createRealMatrix(4, 2);
-        r.setEntry(1, 1, 1-si); // 0-1 -> 0-2
-        r.setEntry(2, 0, si); // 1-0 -> 2-0
-        r.setEntry(3, 0, mi); // 1-1 -> 2-1
-        r.setEntry(3, 1, 1-mi); // 1-1 -> 2-1
+    public static RealMatrix getMatchPropabilities(double si, double mi, int sets, boolean tiebreak) {
+        if(sets % 2 != 1) throw new IllegalArgumentException("Only odd number of sets are allowed");
+        int sets0 = sets / 2;
+        int n = sets0 + 1;
+        RealMatrix q = MatrixUtils.createRealMatrix(n * n, n * n);
+        RealMatrix r = MatrixUtils.createRealMatrix(n * n, 2);
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                int index = i * n + j;
+                if(i < n - 1) {
+                    q.setEntry(index, (i+1) * n + j, si); //i-j -> (i+1)-j
+                }else {
+                    if(tiebreak && j == n - 1) {
+                        r.setEntry(index, 0, mi);
+                    }else {
+                        r.setEntry(index, 0, si);
+                    }
+                }
+
+                if(j < n - 1) {
+                    q.setEntry(index, i * n + (j+1), 1-si); //i-j -> i-(j+1)
+                }else {
+                    if(tiebreak && i == n - 1) {
+                        r.setEntry(index, 1, 1-mi);
+                    }else {
+                        r.setEntry(index, 1, 1-si);
+                    }
+                }
+            }
+        }
+        // q.setEntry(0, 1, 1-si); // 0-0 -> 0-1
+        // q.setEntry(0, 2, si); // 0-0 -> 1-0
+        // q.setEntry(1, 3, si); // 0-1 -> 1-1
+        // q.setEntry(2, 3, 1-si); // 1-0 -> 1-1
+        // r.setEntry(1, 1, 1-si); // 0-1 -> 0-2
+        // r.setEntry(2, 0, si); // 1-0 -> 2-0
+        // r.setEntry(3, 0, mi); // 1-1 -> 2-1
+        // r.setEntry(3, 1, 1-mi); // 1-1 -> 2-1
         return getPropabilities(r, q);
     }
     
@@ -137,7 +164,7 @@ public class MarkovMatrix {
         return MatrixUtils.inverse(MatrixUtils.createRealIdentityMatrix(q.getColumnDimension()).subtract(q)).multiply(r);
     }
     
-    public static double[] approxP(double pm, double m) {
+    public static double[] approxP(double pm, double m, int sets, boolean tiebreak) {
         double pipluspj = 2*pm;
         double piminpj = 0;
         double error = 1;
@@ -154,7 +181,7 @@ public class MarkovMatrix {
             double ti = getSetTiebreakPropabilities(pi, pj).getEntry(0, 0);
             double mi = getMatchTiebreakPropabilities(pi, pj).getEntry(0, 0);
             double si = getSetPropabilities(gi, gj, ti).getEntry(0, 0);
-            double mapprox = getMatchPropabilities(si, mi).getEntry(0, 0);
+            double mapprox = getMatchPropabilities(si, mi, sets, tiebreak).getEntry(0, 0);
             error = (mapprox-m)/m;
             if(Math.abs(error) > maxerr) {
                 piminpj += (m-mapprox)*0.1f;

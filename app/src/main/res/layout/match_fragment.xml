@@ -75,73 +75,12 @@
                         android:src="@drawable/ic_tennis_grey600_48dp" />
                 </LinearLayout>
                 <TableLayout
+                    android:id="@+id/points_table"
                     android:stretchColumns="0,2"
                     android:gravity="center"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2">
-                    <TableRow>
-                        <TextView
-                            android:id="@+id/gamesI0"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp"
-                            android:text="@string/point_seperator" />
-                        <TextView
-                            android:id="@+id/gamesJ0"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp" />
-                    </TableRow>
-                    <TableRow
-                        android:id="@+id/set1">
-                        <TextView
-                            android:id="@+id/gamesI1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp"
-                            android:text="@string/point_seperator" />
-                        <TextView
-                            android:id="@+id/gamesJ1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp" />
-                    </TableRow>
-                    <TableRow>
-                        <TextView
-                            android:id="@+id/pointsI"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textSize="20sp"
-                            android:text="@string/point_seperator" />
-                        <TextView
-                            android:id="@+id/pointsJ"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="20sp"
-                            android:gravity="center" />
-                    </TableRow>
-                </TableLayout>
+                    android:layout_weight="2" />
                 <LinearLayout
                     android:id="@+id/serveJ"
                     android:orientation="vertical"

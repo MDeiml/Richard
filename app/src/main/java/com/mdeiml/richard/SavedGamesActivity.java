@@ -8,20 +8,19 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.SparseBooleanArray;
+import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.util.Log;
 import java.util.Locale;
-import android.view.ActionMode;
-import android.widget.AdapterView;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -66,7 +65,6 @@ public class SavedGamesActivity extends AppCompatActivity {
                         long[] checkedIds = savedGamesList.getCheckedItemIds();
 
                         for(int i = 0; i < checkedIds.length; i++) {
-                            Log.i("Richard", "Deleting " + checkedIds[i]);
                             dbHelper.deleteMatch(checkedIds[i]);
                         }
                         break;
@@ -110,12 +108,10 @@ public class SavedGamesActivity extends AppCompatActivity {
                     {
                         (TextView)view.findViewById(R.id.saved_game_set11),
                         (TextView)view.findViewById(R.id.saved_game_set21),
-                        (TextView)view.findViewById(R.id.saved_game_set31)
                     },
                     {
                         (TextView)view.findViewById(R.id.saved_game_set12),
-                        (TextView)view.findViewById(R.id.saved_game_set22),
-                        (TextView)view.findViewById(R.id.saved_game_set32),
+                        (TextView)view.findViewById(R.id.saved_game_set22)
                     }
                 };
                 TextView sgPoints1 = view.findViewById(R.id.saved_game_points1);
@@ -144,7 +140,11 @@ public class SavedGamesActivity extends AppCompatActivity {
                 int winnerIndex = setCursor.getColumnIndex("game_winner");
 
                 while(setCursor.moveToNext()) {
-                    sgSets[setCursor.getInt(winnerIndex)-1][setCursor.getInt(setIndex)].setText(String.format(Locale.getDefault(), "%d", setCursor.getInt(countIndex)));
+                    int w = setCursor.getInt(winnerIndex)-1;
+                    int s = setCursor.getInt(setIndex);
+                    if(s < sgSets[w].length) {
+                        sgSets[w][s].setText(String.format(Locale.getDefault(), "%d", setCursor.getInt(countIndex)));
+                    }
                 }
 
                 setCursor.close();

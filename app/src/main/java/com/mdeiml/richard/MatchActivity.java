@@ -57,7 +57,7 @@ public class MatchActivity extends AppCompatActivity {
             nameJ = nameJ.isEmpty() ? "Spieler B" : nameJ;
 
             double pmean = pref.getFloat("pmean", 0.6f);
-            double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5));
+            double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5), 3, true);
             double pi = p[0];
             double pj = p[1];
             match = new Match(nameI, nameJ, pi, pj);

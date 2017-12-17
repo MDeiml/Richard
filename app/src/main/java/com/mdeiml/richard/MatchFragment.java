@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Locale;
+import android.widget.TableLayout;
 
 public class MatchFragment extends Fragment {
     
@@ -26,11 +27,10 @@ public class MatchFragment extends Fragment {
     private TextView propJ;
     private TextView pointsI;
     private TextView pointsJ;
-    private TextView gamesI0;
-    private TextView gamesJ0;
-    private TextView gamesI1;
-    private TextView gamesJ1;
-    private View set1;
+    private TableLayout pointsTable;
+    private int numPointRows;
+    private View points;
+    private ArrayList<View> sets;
     private TextView importance;
     private View serveI;
     private View serveJ;
@@ -44,17 +44,17 @@ public class MatchFragment extends Fragment {
         buttonJ = (Button)root.findViewById(R.id.buttonJ);
         propI = (TextView)root.findViewById(R.id.propI);
         propJ = (TextView)root.findViewById(R.id.propJ);
-        pointsI = (TextView)root.findViewById(R.id.pointsI);
-        pointsJ = (TextView)root.findViewById(R.id.pointsJ);
-        gamesI0 = (TextView)root.findViewById(R.id.gamesI0);
-        gamesJ0 = (TextView)root.findViewById(R.id.gamesJ0);
-        gamesI1 = (TextView)root.findViewById(R.id.gamesI1);
-        gamesJ1 = (TextView)root.findViewById(R.id.gamesJ1);
-        set1 = root.findViewById(R.id.set1);
+        pointsTable = (TableLayout)root.findViewById(R.id.points_table);
         importance = (TextView)root.findViewById(R.id.importance);
         serveI = root.findViewById(R.id.serveI);
         serveJ = root.findViewById(R.id.serveJ);
         chart = (ChartView)root.findViewById(R.id.match_chart);
+
+        sets = new ArrayList<>();
+
+        points = addPointsRow(0);
+        pointsI = (TextView)points.findViewById(R.id.pointsI);
+        pointsJ = (TextView)points.findViewById(R.id.pointsJ);
 
         buttonI.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -79,27 +79,44 @@ public class MatchFragment extends Fragment {
         return root;
     }
 
+    public View addPointsRow(int i) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View row = inflater.inflate(R.layout.points, pointsTable, false);
+        pointsTable.addView(row, i);
+        return row;
+    }
+
     public void redraw() {
         double p = getMatch().getWinProb();
         double imp = getMatch().importance();
         double piP = p*100;
         double pjP = 100-piP;
+        byte w = getMatch().getWinner();
         propI.setText(String.format(Locale.getDefault(), "%.1f%%", piP));
         propJ.setText(String.format(Locale.getDefault(), "%.1f%%", pjP));
-        String[] stringScores = getMatch().getCurrentSet().getCurrentGame().stringScores();
-        pointsI.setText(stringScores[0]);
-        pointsJ.setText(stringScores[1]);
-        if(getMatch().getCurrentSetNr() == 0) {
-            set1.setVisibility(View.INVISIBLE);
+        if(w == 0) {
+            String[] stringScores = getMatch().getCurrentSet().getCurrentGame().stringScores();
+            pointsI.setText(stringScores[0]);
+            pointsJ.setText(stringScores[1]);
+            points.setVisibility(View.VISIBLE);
         }else {
-            set1.setVisibility(View.VISIBLE);
+            points.setVisibility(View.INVISIBLE);
+        }
+        int expectedRows = getMatch().getCurrentSetNr()+1;
+        if(getMatch().getWinner() != 0) {
+            expectedRows--;
+        }
+        while(expectedRows > numPointRows) {
+            sets.add(addPointsRow(numPointRows++));
+        }
+        while(expectedRows < numPointRows) {
+            pointsTable.removeView(sets.remove(sets.size()-1));
+            numPointRows--;
         }
         byte[][] games = getMatch().getGames();
-        gamesI0.setText(String.format(Locale.getDefault(), "%d", games[0][0]));
-        gamesJ0.setText(String.format(Locale.getDefault(), "%d", games[0][1]));
-        if(games.length >= 2) {
-            gamesI1.setText(String.format(Locale.getDefault(), "%d", games[1][0]));
-            gamesJ1.setText(String.format(Locale.getDefault(), "%d", games[1][1]));
+        for(int i = 0; i < numPointRows; i++) {
+            ((TextView)sets.get(i).findViewById(R.id.pointsI)).setText(String.format(Locale.getDefault(), "%d", games[i][0]));
+            ((TextView)sets.get(i).findViewById(R.id.pointsJ)).setText(String.format(Locale.getDefault(), "%d", games[i][1]));
         }
         importance.setText(String.format(Locale.getDefault(), "%.1f%%", imp*100));
         if(getMatch().servePoint()) {
