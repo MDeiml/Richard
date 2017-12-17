@@ -5,7 +5,8 @@
         android:layout_margin="10dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-        <TableRow>
+        <TableRow
+            android:id="@+id/saved_game_sets1">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
@@ -18,43 +19,16 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:id="@+id/saved_game_set11" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:id="@+id/saved_game_set21" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
                 android:id="@+id/saved_game_points1" />
         </TableRow>
-        <TableRow>
+        <TableRow
+            android:id="@+id/saved_game_sets2">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:id="@+id/saved_game_player2" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:id="@+id/saved_game_set12" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:id="@+id/saved_game_set22" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"

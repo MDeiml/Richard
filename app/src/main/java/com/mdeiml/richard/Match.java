@@ -14,8 +14,8 @@ public class Match {
 
     public long matchId;
 
-    private int numSets;
-    private boolean matchTiebreak;
+    public final int numSets;
+    public final boolean matchTiebreak;
     public final long startTime;
     public byte winner;
     public final ArrayList<Set> sets;
@@ -35,10 +35,10 @@ public class Match {
     private RealMatrix matM;
 
     public Match(String player1, String player2, double p1, double p2) {
-        this(player1, player2, p1, p2, System.currentTimeMillis(), -1);
+        this(player1, player2, p1, p2, System.currentTimeMillis(), 3, true, -1);
     }
 
-    public Match(String player1, String player2, double p1, double p2, long startTime, long matchId) {
+    public Match(String player1, String player2, double p1, double p2, long startTime, int numSets, boolean matchTiebreak, long matchId) {
         this.startTime = startTime;
         this.player1 = player1;
         this.player2 = player2;
@@ -50,12 +50,12 @@ public class Match {
         Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
         p.winProb = calcWinProb();
         p.importance = calcImportance();
-        numSets = 3;
-        matchTiebreak = true;
+        this.numSets = numSets;
+        this.matchTiebreak = matchTiebreak;
     }
 
     public int getCurrentSetNr() {
-        return sets.size()-1;
+        return sets.size() - (getWinner() == 0 ? 1 : 2);
     }
 
     public boolean servePoint() {
@@ -72,7 +72,7 @@ public class Match {
 
     public byte[][] getGames() {
         byte[][] res = new byte[sets.size()][];
-        for(int i = 0; i < sets.size(); i++) {
+        for(int i = 0; i < sets.size() - (getWinner() == 0 ? 0 : 1); i++) {
             res[i] = sets.get(i).totalGames();
         }
         return res;

@@ -42,6 +42,8 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 			matchValues.put("match_id", match.matchId);
 		}
         matchValues.put("match_start", match.startTime);
+        matchValues.put("match_numsets", match.numSets);
+        matchValues.put("match_matchtiebreak", match.matchTiebreak);
 		matchValues.put("match_player1", match.player1);
 		matchValues.put("match_player2", match.player2);
 		matchValues.put("match_winner", match.getWinner());
@@ -97,7 +99,7 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor matchCursor = db.query(
 			"matches",
-			new String[] {"match_player1", "match_player2", "match_p1", "match_p2", "match_start"},
+			new String[] {"match_player1", "match_player2", "match_p1", "match_p2", "match_start", "match_numsets", "match_matchtiebreak"},
 			"match_id = ?",
 			new String[] {matchId+""},
 			null, null, null);
@@ -106,6 +108,8 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		int p1Index = matchCursor.getColumnIndex("match_p1");
 		int p2Index = matchCursor.getColumnIndex("match_p2");
 		int startIndex = matchCursor.getColumnIndex("match_p2");
+        int numSetsIndex = matchCursor.getColumnIndex("match_numsets");
+        int matchTiebreakIndex = matchCursor.getColumnIndex("match_matchtiebreak");
 		if(matchCursor.moveToNext()) {
 			Match match = new Match(
 				matchCursor.getString(player1Index),
@@ -113,6 +117,8 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 				matchCursor.getDouble(p1Index),
 				matchCursor.getDouble(p2Index),
                 matchCursor.getLong(startIndex),
+                matchCursor.getInt(numSetsIndex),
+                matchCursor.getInt(matchTiebreakIndex) != 0,
 				matchId
 			);
             matchCursor.close();

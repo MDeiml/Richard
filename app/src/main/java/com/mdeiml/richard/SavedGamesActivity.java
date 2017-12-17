@@ -21,6 +21,8 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import java.util.Locale;
+import android.widget.TableRow;
+import android.util.TypedValue;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -46,7 +48,7 @@ public class SavedGamesActivity extends AppCompatActivity {
 
         dbHelper = new SavedMatchesDbHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query("matches", new String[] {"match_id AS _id", "match_player1", "match_player2"}, null, null, null, null, "match_id");
+        Cursor cursor = db.query("matches", new String[] {"match_id AS _id"}, null, null, null, null, "match_id");
         final int idIndex = cursor.getColumnIndex("_id");
         final int player1Index = cursor.getColumnIndex("match_player1");
         final int player2Index = cursor.getColumnIndex("match_player2");
@@ -104,104 +106,37 @@ public class SavedGamesActivity extends AppCompatActivity {
                 final int position = cursor.getPosition();
                 TextView sgPlayer1 = (TextView)view.findViewById(R.id.saved_game_player1);
                 TextView sgPlayer2 = (TextView)view.findViewById(R.id.saved_game_player2);
-                TextView[][] sgSets = new TextView[][] {
-                    {
-                        (TextView)view.findViewById(R.id.saved_game_set11),
-                        (TextView)view.findViewById(R.id.saved_game_set21),
-                    },
-                    {
-                        (TextView)view.findViewById(R.id.saved_game_set12),
-                        (TextView)view.findViewById(R.id.saved_game_set22)
-                    }
-                };
                 TextView sgPoints1 = view.findViewById(R.id.saved_game_points1);
                 TextView sgPoints2 = view.findViewById(R.id.saved_game_points2);
-                for(int i = 0; i < sgSets.length; i++) {
-                    for(int j = 0; j < sgSets[i].length; j++) {
-                        sgSets[i][j].setText("0");
-                    }
+                TableRow sgSets1 = (TableRow)view.findViewById(R.id.saved_game_sets1);
+                TableRow sgSets2 = (TableRow)view.findViewById(R.id.saved_game_sets2);
+
+                Match match = dbHelper.loadMatch(matchId);
+                sgPlayer1.setText(match.player1);
+                sgPlayer2.setText(match.player2);
+
+                int numSets = match.getCurrentSetNr()+1;
+                byte[][] games = match.getGames();
+                for(int i = 0; i < numSets; i++) {
+                    TextView tv0 = new TextView(SavedGamesActivity.this);
+                    tv0.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    tv0.setText(String.format(Locale.getDefault(), "%d", games[i][0]));
+                    tv0.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                    sgSets1.addView(tv0, i+1);
+                    
+                    TextView tv1 = new TextView(SavedGamesActivity.this);
+                    tv1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                    tv1.setText(String.format(Locale.getDefault(), "%d", games[i][1]));
+                    tv1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                    sgSets2.addView(tv1, i+1);
                 }
 
-                sgPlayer1.setText(cursor.getString(player1Index));
-                sgPlayer2.setText(cursor.getString(player2Index));
-                
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-                Cursor setCursor = db.query(
-                    "games",
-                    new String[] {"COUNT(*) as count", "game_set", "game_winner"},
-                    "game_winner != 0 AND game_match = ?",
-                    new String[] {matchId+""},
-                    "game_set, game_winner",
-                    null,
-                    null
-                );
-                int countIndex = setCursor.getColumnIndex("count");
-                int setIndex = setCursor.getColumnIndex("game_set");
-                int winnerIndex = setCursor.getColumnIndex("game_winner");
-
-                while(setCursor.moveToNext()) {
-                    int w = setCursor.getInt(winnerIndex)-1;
-                    int s = setCursor.getInt(setIndex);
-                    if(s < sgSets[w].length) {
-                        sgSets[w][s].setText(String.format(Locale.getDefault(), "%d", setCursor.getInt(countIndex)));
-                    }
+                String[] scores = match.getCurrentSet().getCurrentGame().stringScores();
+                if(scores[0] != "0" || scores[1] != "0") {
+                    sgPoints1.setText(scores[0]);
+                    sgPoints2.setText(scores[1]);
                 }
 
-                setCursor.close();
-
-                Cursor gameCursor = db.query(
-                    "games",
-                    new String[] {"game_set", "game_nr", "game_tiebreak"},
-                    "game_winner = 0 AND game_match = ?",
-                    new String[] {matchId+""},
-                    null,
-                    null,
-                    "game_set ASC, game_nr ASC",
-                    "1"
-                );
-
-                if(gameCursor.moveToNext()) {
-                    int gameSet = gameCursor.getInt(gameCursor.getColumnIndexOrThrow("game_set"));
-                    int gameNr = gameCursor.getInt(gameCursor.getColumnIndexOrThrow("game_nr"));
-                    int tiebreak = gameCursor.getInt(gameCursor.getColumnIndexOrThrow("game_tiebreak"));
-                    gameCursor.close();
-
-                    gameCursor = db.query(
-                        "points",
-                        new String[] {"COUNT(*) as count", "point_winner"},
-                        "point_winner != 0 AND point_match = ? AND point_set = ? AND point_game = ?",
-                        new String[] {matchId+"", gameSet+"", gameNr+""},
-                        "point_winner",
-                        null,
-                        null
-                    );
-
-                    int points1 = 0;
-                    int points2 = 0;
-                    winnerIndex = gameCursor.getColumnIndex("point_winner");
-                    countIndex = gameCursor.getColumnIndex("count");
-                    while(gameCursor.moveToNext()) {
-                        if(gameCursor.getInt(winnerIndex) == 1) {
-                            points1 = gameCursor.getInt(countIndex);
-                        }else {
-                            points2 = gameCursor.getInt(countIndex);
-                        }
-                    }
-                    if(points1 != 0 || points2 != 0) {
-                        if(tiebreak == Match.NO_TIEBREAK) {
-                            if(points1 >= 4 && points2 >= 4) {
-                                byte pointsMax = (byte)Math.max(points1, points2);
-                                points1 += 3 - pointsMax;
-                                points2 += 3 - pointsMax;
-                            }
-                            sgPoints1.setText(Match.POINT_NAMES[points1]);
-                            sgPoints2.setText(Match.POINT_NAMES[points2]);
-                        }else {
-                            sgPoints1.setText(String.format(Locale.getDefault(), "%d", points1));
-                            sgPoints2.setText(String.format(Locale.getDefault(), "%d", points2+""));
-                        }
-                    }
-                }
             }
             
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
