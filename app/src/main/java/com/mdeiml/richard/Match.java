@@ -549,9 +549,9 @@ public class Match {
             byte[] totalPoints = totalPoints();
             if(tiebreak == NO_TIEBREAK) {
                 if(totalPoints[0] >= 4 && totalPoints[1] >= 4) {
-                    byte pointsMax = (byte)Math.max(totalPoints[0], totalPoints[1]);
-                    totalPoints[0] += 3 - pointsMax;
-                    totalPoints[1] += 3 - pointsMax;
+                    byte pointsMin = (byte)Math.min(totalPoints[0], totalPoints[1]);
+                    totalPoints[0] += 3 - pointsMin;
+                    totalPoints[1] += 3 - pointsMin;
                 }
                 return new String[] {POINT_NAMES[totalPoints[0]], POINT_NAMES[totalPoints[1]]};
             }else {
