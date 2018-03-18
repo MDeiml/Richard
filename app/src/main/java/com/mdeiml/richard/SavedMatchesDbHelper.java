@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 
-	public static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 2;
 	public static final String DATABASE_NAME = "SavedMatches.db";
 
 	private Context context;
@@ -26,12 +26,17 @@ public class SavedMatchesDbHelper extends SQLiteOpenHelper {
 		}
 	}
 
+    // TODO
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO
+		String[] deleteScript = context.getResources().getStringArray(R.array.sql_delete_database);
+		for(String sql : deleteScript) {
+			db.execSQL(sql);
+		}
+        onCreate(db);
 	}
 
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO
+        onUpgrade(db, oldVersion, newVersion);
 	}
 
 	public void saveMatch(Match match) {

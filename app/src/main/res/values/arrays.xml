@@ -60,4 +60,19 @@ CREATE TABLE points (
 );
         </item>
     </string-array>
+
+    <string-array name="sql_delete_database">
+        <item>
+            DROP TABLE IF EXISTS points;
+        </item>
+        <item>
+            DROP TABLE IF EXISTS games;
+        </item>
+        <item>
+            DROP TABLE IF EXISTS sets;
+        </item>
+        <item>
+            DROP TABLE IF EXISTS matches;
+        </item>
+    </string-array>
 </resources>
