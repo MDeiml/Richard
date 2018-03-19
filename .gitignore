@@ -3,3 +3,4 @@
 .gradle
 .vscode
 local.properties
+keystore.properties
