@@ -103,9 +103,6 @@ public class MatchFragment extends Fragment {
             points.setVisibility(View.INVISIBLE);
         }
         int expectedRows = getMatch().getCurrentSetNr()+1;
-        if(getMatch().getWinner() != 0) {
-            expectedRows--;
-        }
         while(expectedRows > numPointRows) {
             sets.add(addPointsRow(numPointRows++));
         }

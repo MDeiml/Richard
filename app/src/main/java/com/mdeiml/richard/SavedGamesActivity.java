@@ -115,6 +115,13 @@ public class SavedGamesActivity extends AppCompatActivity {
                 sgPlayer1.setText(match.player1);
                 sgPlayer2.setText(match.player2);
 
+                while (sgSets1.getChildCount() > 2) {
+                    sgSets1.removeViewAt(1);
+                }
+                while (sgSets2.getChildCount() > 2) {
+                    sgSets2.removeViewAt(1);
+                }
+
                 int numSets = match.getCurrentSetNr()+1;
                 byte[][] games = match.getGames();
                 for(int i = 0; i < numSets; i++) {

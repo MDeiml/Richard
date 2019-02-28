@@ -1,36 +1,51 @@
 package com.mdeiml.richard;
 
-import android.content.*;
-import android.view.*;
-import android.widget.*;
 import android.app.Dialog;
+import android.content.*;
+import android.database.*;
+import android.database.sqlite.*;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.AppCompatSeekBar;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View.OnClickListener;
-import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.Toolbar;
+import android.text.TextWatcher;
+import android.text.Editable;
+import android.view.*;
+import android.view.View.OnClickListener;
+import android.widget.*;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.util.Log;
 import java.util.Locale;
+import java.util.HashMap;
 
 public class NewGameActivity extends AppCompatActivity {
     
     private Button start;
-    private EditText nameI;
-    private EditText nameJ;
+    private AutoCompleteTextView nameI;
+    private AutoCompleteTextView nameJ;
     private AppCompatSeekBar matchProp;
     private TextView matchPropI;
     private TextView matchPropJ;
+
+    private SavedMatchesDbHelper dbHelper;
+
+    private CalculateEloTask eloTask;
+    private HashMap<String, Double> elos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.newgame);
+
+        dbHelper = new SavedMatchesDbHelper(this);
+        elos = new HashMap<>();
+
         start = (Button)findViewById(R.id.start);
-        nameI = (EditText)findViewById(R.id.nameI);
-        nameJ = (EditText)findViewById(R.id.nameJ);
+        nameI = (AutoCompleteTextView)findViewById(R.id.nameI);
+        nameJ = (AutoCompleteTextView)findViewById(R.id.nameJ);
         matchProp = (AppCompatSeekBar)findViewById(R.id.matchProp);
         matchPropI = (TextView)findViewById(R.id.matchPropI);
         matchPropJ = (TextView)findViewById(R.id.matchPropJ);
@@ -60,6 +75,88 @@ public class NewGameActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                null,
+                new String[] { "_id" },
+                new int[] { android.R.id.text1 }
+            );
+        adapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                return getNamesLike("%" + constraint + "%");
+            }
+        });
+        adapter.setStringConversionColumn(0);
+        nameI.setAdapter(adapter);
+        nameJ.setAdapter(adapter);
+        nameI.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            public void afterTextChanged(Editable e) {
+                Cursor c = getNamesLike(e.toString());
+                if (c.getCount() > 0) {
+                    nameI.setTextColor(0xffff0000);
+                    if (elos.containsKey(e.toString())) {
+                        if (elos.containsKey(nameJ.getText().toString())) {
+                            double elo1 = elos.get(nameI.getText().toString());
+                            double elo2 = elos.get(nameJ.getText().toString());
+                            double prob = 1 / (1 + Math.pow(10, elo2 - elo1));
+                            matchProp.setProgress((int) (prob * 100));
+                        }
+                    } else {
+                        if (eloTask != null) {
+                            eloTask.cancel(true);
+                        }
+                        eloTask = new CalculateEloTask(NewGameActivity.this) {
+                            public void onPostExecute(HashMap<String, Double> result) {
+                                elos.putAll(result);
+                                if (elos.containsKey(nameI.getText().toString()) && elos.containsKey(nameJ.getText().toString())) {
+                                    double elo1 = elos.get(nameI.getText().toString());
+                                    double elo2 = elos.get(nameJ.getText().toString());
+                                    double prob = 1 / (1 + Math.pow(10, (elo2 - elo1) / 400));
+                                    matchProp.setProgress((int) (prob * 100));
+                                }
+                            }
+                        };
+                        eloTask.execute(e.toString());
+                    }
+                } else {
+                    nameI.setTextColor(0xff000000);
+                }
+            }
+        });
+        nameJ.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            public void afterTextChanged(Editable e) {
+                Cursor c = getNamesLike(e.toString());
+                if (c.getCount() > 0) {
+                    nameJ.setTextColor(0xffff0000);
+                    if (elos.containsKey(nameI.getText().toString()) && elos.containsKey(nameJ.getText().toString())) {
+                        double elo1 = elos.get(nameI.getText().toString());
+                        double elo2 = elos.get(nameJ.getText().toString());
+                        double prob = 1 / (1 + Math.pow(10, (elo2 - elo1) / 400));
+                        matchProp.setProgress((int) (prob * 100));
+                    }
+                } else {
+                    nameJ.setTextColor(0xff000000);
+                }
+            }
+        });
+
+    }
+
+    public Cursor getNamesLike(String name) { // TODO: Escape %
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        return db.rawQuery(
+                "SELECT match_player1 AS _id FROM matches WHERE match_player1 LIKE ? UNION SELECT match_player2 AS _id FROM matches WHERE match_player2 LIKE ?",
+                new String[] { name, name }
+            );
     }
 
     @Override
@@ -93,9 +190,9 @@ public class NewGameActivity extends AppCompatActivity {
                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
                            EditText pmeanInput = (EditText)v.findViewById(R.id.pmean_input);
-                           float p = Float.parseFloat(pmeanInput.getText().toString());
+                           int p = Integer.parseInt(pmeanInput.getText().toString());
                            SharedPreferences.Editor edit = pref.edit();
-                           edit.putFloat("pmean", p);
+                           edit.putFloat("pmean", p / 100f);
                            edit.apply();
                        }
                    })
@@ -105,7 +202,7 @@ public class NewGameActivity extends AppCompatActivity {
                        }
                    });
             EditText pInput = (EditText)v.findViewById(R.id.pmean_input);
-            pInput.setText(pref.getFloat("pmean", 0.6f)+"");
+            pInput.setText(String.format(Locale.getDefault(), "%d", (int)(pref.getFloat("pmean", 0.6f) * 100)));
             return builder.create();
         }
         

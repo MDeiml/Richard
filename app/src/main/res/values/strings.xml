@@ -12,10 +12,27 @@
     <string name="player1Hint">Spieler A</string>
     <string name="player2Hint">Spieler B</string>
     <string name="winprob">Gewinnwahrscheinlichkeit</string>
+    <string name="winprob_on_serve">Gewinnwahrscheinlichkeit bei Aufschlag</string>
     <string name="start">Start</string>
     <string name="importance">Importance</string>
     <string name="points_per_importance">Punkte / Importance</string>
     <string name="serve_points">Aufschlagspunkte</string>
     <string name="breaks">Breaks</string>
+
+    <string name="sql_player_stats">
+SELECT SUM(count_p) AS count, SUM(wins_p) as wins, player
+FROM (
+        SELECT COUNT(*) AS count_p, SUM(match_winner = 1) AS wins_p, match_player2 as player
+        FROM matches
+        WHERE match_winner != 0 AND match_player1 = ?
+        GROUP BY match_player2
+    UNION ALL
+        SELECT COUNT(*) AS count_p, SUM(match_winner = 2) AS wins_p, match_player1 as player
+        FROM matches
+        WHERE match_winner != 0 AND match_player2 = ?
+        GROUP BY match_player1
+)
+GROUP BY player
+    </string>
 
 </resources>

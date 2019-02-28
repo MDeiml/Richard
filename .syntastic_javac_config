@@ -1,0 +1,1 @@
+let g:syntastic_java_javac_classpath = '$ANDROID_HOME/platforms/android-26/*:/home/matthias/tools/android-classes/*.jar:./app/build/intermediates/classes/debug:./app/libs/*.jar'
