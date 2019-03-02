@@ -18,6 +18,8 @@
     <string name="points_per_importance">Punkte / Importance</string>
     <string name="serve_points">Aufschlagspunkte</string>
     <string name="breaks">Breaks</string>
+    <string name="game_running_heading">Laufende Spiele</string>
+    <string name="game_over_heading">Abgeschlossene Spiele</string>
 
     <string name="sql_player_stats">
 SELECT SUM(count_p) AS count, SUM(wins_p) as wins, player
@@ -33,6 +35,19 @@ FROM (
         GROUP BY match_player1
 )
 GROUP BY player
+    </string>
+
+    <string name="sql_saved_matches">
+SELECT *
+FROM (
+        SELECT match_id as _id, match_player1, match_player2, match_winner * 2 as match_winner
+        FROM matches
+    UNION ALL
+        VALUES
+        (-2, NULL, NULL, -1),
+        (-1, NULL, NULL, 1)
+)
+ORDER BY match_winner ASC
     </string>
 
 </resources>
