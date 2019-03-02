@@ -55,7 +55,7 @@ public class Match {
     }
 
     public int getCurrentSetNr() {
-        return sets.size() - (getWinner() == 0 ? 1 : 2);
+        return sets.size() - 1;
     }
 
     public boolean servePoint() {
@@ -72,7 +72,7 @@ public class Match {
 
     public byte[][] getGames() {
         byte[][] res = new byte[sets.size()][];
-        for(int i = 0; i < sets.size() - (getWinner() == 0 ? 0 : 1); i++) {
+        for(int i = 0; i < sets.size(); i++) {
             res[i] = sets.get(i).totalGames();
         }
         return res;
@@ -161,12 +161,13 @@ public class Match {
         byte w = getCurrentSet().point(player);
         if(w != 0) {
             w1 = getWinner();
-            // new set even if match is won for easier logic
-            byte[] totalSets = totalSets();
-            boolean t = matchTiebreak && totalSets[0] == numSets / 2 && totalSets[1] == numSets / 2;
-            byte server = getCurrentSet().getCurrentGame().getCurrentPoint().server;
-            server = server == 1 ? (byte)2 : (byte)1;
-            sets.add(new Set(t ? MATCH_TIEBREAK : NO_TIEBREAK, server));
+            if (w1 == 0) {
+                byte[] totalSets = totalSets();
+                boolean t = matchTiebreak && totalSets[0] == numSets / 2 && totalSets[1] == numSets / 2;
+                byte server = getCurrentSet().getCurrentGame().getCurrentPoint().server;
+                server = server == 1 ? (byte)2 : (byte)1;
+                sets.add(new Set(t ? MATCH_TIEBREAK : NO_TIEBREAK, server));
+            }
         }
         if(calcStatistics) {
             Point p = getCurrentSet().getCurrentGame().getCurrentPoint();
@@ -180,8 +181,12 @@ public class Match {
         if(getCurrentSet().getCurrentGame().getCurrentPoint() == sets.get(0).games.get(0).points.get(0)) {
             return false;
         }
-        winner = 0;
-        if(getCurrentSet().removePoint()) {
+        if (winner != 0) {
+            winner = 0;
+            getCurrentSet().getCurrentGame().getCurrentPoint().winner = 0;
+            getCurrentSet().getCurrentGame().winner = 0;
+            getCurrentSet().winner = 0;
+        } else if(getCurrentSet().removePoint()) {
             sets.remove(sets.size()-1);
             getCurrentSet().getCurrentGame().getCurrentPoint().winner = 0;
             getCurrentSet().getCurrentGame().winner = 0;

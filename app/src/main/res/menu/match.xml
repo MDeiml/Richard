@@ -7,10 +7,4 @@
         android:title="@string/undo"
         android:icon="@drawable/ic_undo_white_24dp" />
 
-    <item
-        app:showAsAction="ifRoom"
-        android:id="@+id/save_game"
-        android:title="@string/save_game"
-        android:icon="@drawable/ic_save_white_24dp" />
-    
 </menu>

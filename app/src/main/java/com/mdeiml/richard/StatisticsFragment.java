@@ -34,10 +34,12 @@ public class StatisticsFragment extends Fragment {
         breaks2 = root.findViewById(R.id.stats_breaks2);
         String serves = getContext().getString(R.string.serve_points);
         String breaks = getContext().getString(R.string.breaks);
-        ((TextView)root.findViewById(R.id.stats_label_serves1)).setText(String.format(Locale.getDefault(), "%s %s", serves, getMatch().player1));
-        ((TextView)root.findViewById(R.id.stats_label_serves2)).setText(String.format(Locale.getDefault(), "%s %s", serves, getMatch().player2));
-        ((TextView)root.findViewById(R.id.stats_label_breaks1)).setText(String.format(Locale.getDefault(), "%s %s", breaks, getMatch().player1));
-        ((TextView)root.findViewById(R.id.stats_label_breaks2)).setText(String.format(Locale.getDefault(), "%s %s", breaks, getMatch().player2));
+        String player1 = getMatch().player1 == null ? getResources().getString(R.string.player_a) : getMatch().player1;
+        String player2 = getMatch().player2 == null ? getResources().getString(R.string.player_b) : getMatch().player2;
+        ((TextView)root.findViewById(R.id.stats_label_serves1)).setText(String.format(Locale.getDefault(), "%s %s", serves, player1));
+        ((TextView)root.findViewById(R.id.stats_label_serves2)).setText(String.format(Locale.getDefault(), "%s %s", serves, player2));
+        ((TextView)root.findViewById(R.id.stats_label_breaks1)).setText(String.format(Locale.getDefault(), "%s %s", breaks, player1));
+        ((TextView)root.findViewById(R.id.stats_label_breaks2)).setText(String.format(Locale.getDefault(), "%s %s", breaks, player2));
         redraw();
         return root;
     }

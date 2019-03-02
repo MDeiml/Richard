@@ -60,6 +60,8 @@ public class SavedGamesAdapter extends CursorAdapter {
     }
 
     public void bindView(View view, Context context, Cursor cursor) {
+        final int maxSets = 3; // TODO
+
         int winner = cursor.getInt(winnerIndex);
         if (winner == -1) {
             ((TextView) view).setText(context.getString(R.string.game_running_heading));
@@ -76,26 +78,25 @@ public class SavedGamesAdapter extends CursorAdapter {
             TableRow sgSets2 = (TableRow)view.findViewById(R.id.saved_game_sets2);
 
             Match match = dbHelper.loadMatch(matchId);
-            sgPlayer1.setText(match.player1);
-            sgPlayer2.setText(match.player2);
+            sgPlayer1.setText(match.player1 == null ? context.getString(R.string.player_a) : match.player1);
+            sgPlayer2.setText(match.player2 == null ? context.getString(R.string.player_b) : match.player2);
 
             int numSets = match.getCurrentSetNr()+1;
+            if (match.getCurrentSet().tiebreak == Match.MATCH_TIEBREAK) {
+                numSets--;
+            }
             byte[][] games = match.getGames();
             for (int i = 0; i < numSets; i++) {
                 TextView tv0 = (TextView) sgSets1.getChildAt(i + 1);
-                tv0.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 tv0.setText(String.format(Locale.getDefault(), "%d", games[i][0]));
-                tv0.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                 tv0.setVisibility(View.VISIBLE);
                 
                 TextView tv1 = (TextView) sgSets2.getChildAt(i + 1);
-                tv1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 tv1.setText(String.format(Locale.getDefault(), "%d", games[i][1]));
-                tv1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
                 tv1.setVisibility(View.VISIBLE);
             }
 
-            for (int i = numSets; i < 3; i++) {
+            for (int i = numSets; i < maxSets; i++) {
                 sgSets1.getChildAt(i + 1).setVisibility(View.INVISIBLE);
                 sgSets2.getChildAt(i + 1).setVisibility(View.INVISIBLE);
             }
@@ -117,8 +118,23 @@ public class SavedGamesAdapter extends CursorAdapter {
             heading.setTypeface(null, Typeface.BOLD);
             return heading;
         } else {
+            final int maxSets = 3; // TODO
             LayoutInflater inflater = LayoutInflater.from(context);
-            return inflater.inflate(R.layout.saved_game, parent, false);
+            View view = inflater.inflate(R.layout.saved_game, parent, false);
+            TableRow sgSets1 = (TableRow)view.findViewById(R.id.saved_game_sets1);
+            TableRow sgSets2 = (TableRow)view.findViewById(R.id.saved_game_sets2);
+            for (int i = 0; i < maxSets; i++) {
+                TextView tv0 = new TextView(context);
+                tv0.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tv0.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                sgSets1.addView(tv0, i + 1);
+                
+                TextView tv1 = new TextView(context);
+                tv1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tv1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1));
+                sgSets2.addView(tv1, i + 1);
+            }
+            return view;
         }
     }
     

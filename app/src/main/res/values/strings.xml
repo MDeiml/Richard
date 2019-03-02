@@ -20,6 +20,8 @@
     <string name="breaks">Breaks</string>
     <string name="game_running_heading">Laufende Spiele</string>
     <string name="game_over_heading">Abgeschlossene Spiele</string>
+    <string name="player_a">Spieler A</string>
+    <string name="player_b">Spieler B</string>
 
     <string name="sql_player_stats">
 SELECT SUM(count_p) AS count, SUM(wins_p) as wins, player
@@ -34,6 +36,7 @@ FROM (
         WHERE match_winner != 0 AND match_player2 = ?
         GROUP BY match_player1
 )
+WHERE player IS NOT NULL
 GROUP BY player
     </string>
 

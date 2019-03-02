@@ -53,8 +53,8 @@ public class MatchActivity extends AppCompatActivity {
             SharedPreferences pref = getSharedPreferences("com.mdeiml.richard", MODE_PRIVATE);
             String nameI = i.getStringExtra("nameI").trim();
             String nameJ = i.getStringExtra("nameJ").trim();
-            nameI = nameI.isEmpty() ? "Spieler A" : nameI;
-            nameJ = nameJ.isEmpty() ? "Spieler B" : nameJ;
+            nameI = nameI.isEmpty() ? null : nameI;
+            nameJ = nameJ.isEmpty() ? null : nameJ;
 
             double pmean = pref.getFloat("pmean", 0.6f);
             double[] p = MarkovMatrix.approxP(pmean, i.getDoubleExtra("m", 0.5), 3, true);
@@ -103,9 +103,6 @@ public class MatchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.save_game:
-                dbHelper.saveMatch(match);
-                return true;
             case R.id.undo:
                 match.removePoint();
                 redraw();

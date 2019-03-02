@@ -53,6 +53,7 @@ public class MatchFragment extends Fragment {
         sets = new ArrayList<>();
 
         points = addPointsRow(0);
+        numPointRows = 0;
         pointsI = (TextView)points.findViewById(R.id.pointsI);
         pointsJ = (TextView)points.findViewById(R.id.pointsJ);
 
@@ -71,8 +72,8 @@ public class MatchFragment extends Fragment {
 
         Match match = getMatch();
         
-        buttonI.setText(match.player1);
-        buttonJ.setText(match.player2);
+        buttonI.setText(match.player1 == null ? getResources().getString(R.string.player_a) : match.player1);
+        buttonJ.setText(match.player2 == null ? getResources().getString(R.string.player_b) : match.player2);
 
         updateProbs();
         
@@ -94,15 +95,19 @@ public class MatchFragment extends Fragment {
         byte w = getMatch().getWinner();
         propI.setText(String.format(Locale.getDefault(), "%.1f%%", piP));
         propJ.setText(String.format(Locale.getDefault(), "%.1f%%", pjP));
-        if(w == 0) {
+        if(w == 0 || getMatch().getCurrentSet().tiebreak == Match.MATCH_TIEBREAK) {
             String[] stringScores = getMatch().getCurrentSet().getCurrentGame().stringScores();
             pointsI.setText(stringScores[0]);
             pointsJ.setText(stringScores[1]);
             points.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             points.setVisibility(View.INVISIBLE);
         }
+
         int expectedRows = getMatch().getCurrentSetNr()+1;
+        if (getMatch().getCurrentSet().tiebreak == Match.MATCH_TIEBREAK) {
+            expectedRows--;
+        }
         while(expectedRows > numPointRows) {
             sets.add(addPointsRow(numPointRows++));
         }
