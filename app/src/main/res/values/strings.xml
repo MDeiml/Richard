@@ -43,14 +43,18 @@ GROUP BY player
     <string name="sql_saved_matches">
 SELECT *
 FROM (
-        SELECT match_id as _id, match_player1, match_player2, match_winner * 2 as match_winner
+        SELECT match_id as _id, match_player1, match_player2, match_winner * 2 as match_winner, match_start
         FROM matches
     UNION ALL
-        VALUES
-        (-2, NULL, NULL, -1),
-        (-1, NULL, NULL, 1)
+        SELECT DISTINCT -2, NULL, NULL, -1, NULL
+        FROM matches
+        WHERE match_winner = 0
+    UNION ALL
+        SELECT DISTINCT -1, NULL, NULL, 1, NULL
+        FROM matches
+        WHERE match_winner != 0
 )
-ORDER BY match_winner ASC
+ORDER BY match_winner ASC, match_start DESC
     </string>
 
 </resources>
