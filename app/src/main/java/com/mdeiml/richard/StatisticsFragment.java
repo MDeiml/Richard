@@ -2,6 +2,9 @@ package com.mdeiml.richard;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,23 +26,46 @@ public class StatisticsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         super.onCreateView(inflater, parent, savedInstanceState);
         View root = inflater.inflate(R.layout.statistics_fragment, parent, false);
+
         chartWinprob = root.findViewById(R.id.chart_winprob);
         chartImp = root.findViewById(R.id.chart_imp);
         chartImp.setType(ChartView.TYPE_IMPORTANCE);
         chartImpWin = root.findViewById(R.id.chart_impwin);
         chartImpWin.setType(ChartView.TYPE_IMPORTANCE_WIN);
+
         serves1 = root.findViewById(R.id.stats_serves1);
         serves2 = root.findViewById(R.id.stats_serves2);
         breaks1 = root.findViewById(R.id.stats_breaks1);
         breaks2 = root.findViewById(R.id.stats_breaks2);
+
         String serves = getContext().getString(R.string.serve_points);
         String breaks = getContext().getString(R.string.breaks);
         String player1 = getMatch().player1 == null ? getResources().getString(R.string.player_a) : getMatch().player1;
         String player2 = getMatch().player2 == null ? getResources().getString(R.string.player_b) : getMatch().player2;
-        ((TextView)root.findViewById(R.id.stats_label_serves1)).setText(String.format(Locale.getDefault(), "%s %s", serves, player1));
-        ((TextView)root.findViewById(R.id.stats_label_serves2)).setText(String.format(Locale.getDefault(), "%s %s", serves, player2));
-        ((TextView)root.findViewById(R.id.stats_label_breaks1)).setText(String.format(Locale.getDefault(), "%s %s", breaks, player1));
-        ((TextView)root.findViewById(R.id.stats_label_breaks2)).setText(String.format(Locale.getDefault(), "%s %s", breaks, player2));
+        Object spanRed = new ForegroundColorSpan(getResources().getColor(R.color.primaryRedLight));
+        Object spanBlue = new ForegroundColorSpan(getResources().getColor(R.color.primaryLight));
+
+        ((TextView)root.findViewById(R.id.stats_label_serves1)).setText(
+            new SpannableStringBuilder(serves)
+            .append(' ')
+            .append(player1, spanRed, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        );
+        ((TextView)root.findViewById(R.id.stats_label_serves2)).setText(
+            new SpannableStringBuilder(serves)
+            .append(' ')
+            .append(player2, spanBlue, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        );
+        ((TextView)root.findViewById(R.id.stats_label_breaks1)).setText(
+            new SpannableStringBuilder(breaks)
+            .append(' ')
+            .append(player1, spanRed, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        );
+        ((TextView)root.findViewById(R.id.stats_label_breaks2)).setText(
+            new SpannableStringBuilder(breaks)
+            .append(' ')
+            .append(player2, spanBlue, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        );
+
         redraw();
         return root;
     }

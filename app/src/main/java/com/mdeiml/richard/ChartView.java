@@ -145,11 +145,9 @@ public class ChartView extends View {
                             switch(type) {
                                 case TYPE_WINPROB:
                                     val = point.winProb;
-                                    linePaint = bluePaint;
                                     break;
                                 case TYPE_IMPORTANCE:
                                     val = point.importance * 5;
-                                    linePaint = redPaint;
                                     break;
                             }
                             if(index != 0) {
@@ -181,8 +179,12 @@ public class ChartView extends View {
                 }
                 n = Math.min(n, IMPORTANCE_WIN_PARTS);
                 if(n > 0) {
-                    float scale = (maxImp - minImp) / (n - 1);
+                    float scale = n == 1 ? 1 : (maxImp - minImp) / (n - 1);
                     int maxN = 0;
+                    for (int i = 0; i < n; i++) {
+                        ns[i] = 0;
+                        data[i] = 0;
+                    }
                     for(Match.Set set : match.sets) {
                         for(Match.Game game : set.games) {
                             for(Match.Point point : game.points) {
@@ -217,7 +219,7 @@ public class ChartView extends View {
                         int y2 = Math.max(2, (int)(val2 * h));
                         canvas.drawRect(ls + x0, ys + h, ls + x1, ys + h - y1, redPaint);
                         canvas.drawRect(ls + x2, ys + h, ls + x3, ys + h - y2, bluePaint);
-                        canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", scale*i*100), ls + xt, ys + h + 2 * halfText, scalePaint);
+                        canvas.drawText(String.format(Locale.getDefault(), "%.1f%%", (minImp + scale * i) * 100), ls + xt, ys + h + 2 * halfText, scalePaint);
                     }
                 }else {
                     int nlines = 4;

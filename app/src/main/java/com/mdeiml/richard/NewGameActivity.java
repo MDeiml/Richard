@@ -86,7 +86,7 @@ public class NewGameActivity extends AppCompatActivity {
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence constraint) {
-                return getNamesLike("%" + constraint + "%");
+                return getNamesLike(constraint + "%");
             }
         });
         adapter.setStringConversionColumn(0);

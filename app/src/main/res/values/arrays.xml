@@ -22,6 +22,12 @@ CREATE TABLE matches (
 );
         </item>
         <item>
+CREATE INDEX idx_match_player1 ON matches (match_player1)
+        </item>
+        <item>
+CREATE INDEX idx_match_player2 ON matches (match_player2)
+        </item>
+        <item>
 CREATE TABLE sets (
     set_match INTEGER NOT NULL,
     set_nr INTEGER NOT NULL,
@@ -64,6 +70,12 @@ CREATE TABLE points (
     <string-array name="sql_delete_database">
         <item>
             DROP TABLE IF EXISTS points;
+        </item>
+        <item>
+            DROP INDEX IF EXISTS idx_match_player1;
+        </item>
+        <item>
+            DROP INDEX IF EXISTS idx_match_player2;
         </item>
         <item>
             DROP TABLE IF EXISTS games;
