@@ -5,17 +5,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:textColor="@color/textContent"
         android:textSize="20sp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="20sp"
+        android:textColor="@color/textContent"
         android:text="@string/point_seperator" />
     <TextView
         android:id="@+id/pointsJ"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:textColor="@color/textContent"
         android:textSize="20sp" />
 </TableRow>

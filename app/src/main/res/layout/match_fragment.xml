@@ -37,6 +37,7 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:textColor="@color/textContent"
                     android:textSize="30sp"/>
                 <TextView
                     android:id="@+id/propJ"
@@ -44,6 +45,7 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:textColor="@color/textContent"
                     android:textSize="30sp"/>
             </LinearLayout>
             <TextView
@@ -51,6 +53,7 @@
                 android:layout_above="@id/points_layout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/textContent"
                 android:textSize="12sp"
                 android:padding="3dp"
                 android:gravity="center"/>
@@ -65,19 +68,20 @@
                 <LinearLayout
                     android:id="@+id/serveI"
                     android:orientation="vertical"
-                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="0dp">
+                    android:layout_height="wrap_content">
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:src="@drawable/ic_tennis_grey600_48dp" />
                 </LinearLayout>
                 <TableLayout
                     android:id="@+id/points_table"
                     android:stretchColumns="0,2"
-                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2" />
@@ -87,10 +91,11 @@
                     android:gravity="center"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="0dp" >
+                    android:layout_height="wrap_content" >
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:src="@drawable/ic_tennis_grey600_48dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -104,14 +109,14 @@
         android:orientation="horizontal">
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/buttonI"
-            app:backgroundTint="#f44336"
+            app:backgroundTint="@color/primaryRed"
             android:textColor="#ffffff"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="fill_parent" />
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/buttonJ"
-            app:backgroundTint="#3f51b5"
+            app:backgroundTint="@color/primary"
             android:textColor="#ffffff"
             android:layout_width="0dp"
             android:layout_weight="1"

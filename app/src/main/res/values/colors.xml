@@ -3,7 +3,12 @@
     <item name="card_background_selected" type="color">#dddddd</item>
     <item name="primary" type="color">#3f51b5</item>
     <item name="primaryDark" type="color">#303f9f</item>
+    <item name="primaryLight" type="color">#4285f4</item>
+    <item name="primaryRed" type="color">#f44336</item>
+    <item name="primaryRedLight" type="color">#db4437</item>
     <item name="accent" type="color">#536dfe</item>
+    <item name="textContent" type="color">#5f6368</item>
+    <item name="textHeading" type="color">#202124</item>
     <item name="backgroundDark" type="color">#eeeeee</item>
     <item name="backgroundLight" type="color">#ffffff</item>
 </resources>

@@ -89,10 +89,12 @@ public class SavedGamesAdapter extends CursorAdapter {
             for (int i = 0; i < numSets; i++) {
                 TextView tv0 = (TextView) sgSets1.getChildAt(i + 1);
                 tv0.setText(String.format(Locale.getDefault(), "%d", games[i][0]));
+                tv0.setTextColor(context.getResources().getColor(R.color.textContent));
                 tv0.setVisibility(View.VISIBLE);
                 
                 TextView tv1 = (TextView) sgSets2.getChildAt(i + 1);
                 tv1.setText(String.format(Locale.getDefault(), "%d", games[i][1]));
+                tv0.setTextColor(context.getResources().getColor(R.color.textContent));
                 tv1.setVisibility(View.VISIBLE);
             }
 

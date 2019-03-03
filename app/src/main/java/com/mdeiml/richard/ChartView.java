@@ -41,19 +41,19 @@ public class ChartView extends View {
         float dpr = met.densityDpi / DisplayMetrics.DENSITY_DEFAULT;
 
         bluePaint = new Paint();
-        bluePaint.setColor(0xff4285f4);
+        bluePaint.setColor(c.getResources().getColor(R.color.primaryLight));
         bluePaint.setStrokeWidth(2*dpr);
         bluePaint.setAntiAlias(true);
         bluePaint.setStrokeCap(Paint.Cap.ROUND);
 
         redPaint = new Paint();
-        redPaint.setColor(0xffdb4437);
+        redPaint.setColor(c.getResources().getColor(R.color.primaryRedLight));
         redPaint.setStrokeWidth(2*dpr);
         redPaint.setAntiAlias(true);
         redPaint.setStrokeCap(Paint.Cap.ROUND);
         
         axisPaint = new Paint();
-        axisPaint.setColor(0xff888888);
+        axisPaint.setColor(c.getResources().getColor(R.color.textContent));
         axisPaint.setStrokeWidth(0);
         axisPaint.setStyle(Paint.Style.STROKE);
 
@@ -63,13 +63,13 @@ public class ChartView extends View {
         indicatorPaint.setStyle(Paint.Style.STROKE);
         
         textPaint = new Paint();
-        textPaint.setColor(0xff888888);
+        textPaint.setColor(c.getResources().getColor(R.color.textContent));
         textPaint.setAntiAlias(true);
         textPaint.setTextAlign(Paint.Align.RIGHT);
         textPaint.setTextSize(14*dpr);
         
         scalePaint = new Paint();
-        scalePaint.setColor(0xff888888);
+        scalePaint.setColor(c.getResources().getColor(R.color.textContent));
         scalePaint.setAntiAlias(true);
         scalePaint.setTextAlign(Paint.Align.CENTER);
         scalePaint.setTextSize(14*dpr);

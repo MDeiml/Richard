@@ -12,12 +12,14 @@
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:textColor="@color/textHeading"
                 android:id="@+id/saved_game_player1" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:textColor="@color/textContent"
                 android:gravity="center"
                 android:id="@+id/saved_game_points1" />
         </TableRow>
@@ -28,12 +30,14 @@
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:textColor="@color/textHeading"
                 android:id="@+id/saved_game_player2" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:textColor="@color/textContent"
                 android:gravity="center"
                 android:id="@+id/saved_game_points2" />
         </TableRow>
