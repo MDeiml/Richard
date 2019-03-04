@@ -44,11 +44,7 @@ public class SavedGamesActivity extends AppCompatActivity {
         savedGamesList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         savedGamesList.setMultiChoiceModeListener(new ListView.MultiChoiceModeListener() {
             @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                if (checked && ((SavedGamesAdapter) savedGamesList.getAdapter()).isHeader(position)) {
-                    savedGamesList.setItemChecked(position, false);
-                }
-            }
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {}
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {

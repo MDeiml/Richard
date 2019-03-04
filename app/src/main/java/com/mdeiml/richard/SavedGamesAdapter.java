@@ -43,12 +43,14 @@ public class SavedGamesAdapter extends CursorAdapter {
     }
 
     public int getItemViewType(int position) {
+        if (position == runningHeaderIndex || position == overHeaderIndex) {
+            return 0;
+        }
+
         Cursor cursor = getCursor();
         cursor.moveToPosition(position);
         int winner = cursor.getInt(winnerIndex);
-        if (position == runningHeaderIndex || position == overHeaderIndex) {
-            return 0;
-        } else if (winner == -1) {
+        if (winner == -1) {
             runningHeaderIndex = position;
             return 0;
         } else if (winner == 1) {
@@ -57,6 +59,10 @@ public class SavedGamesAdapter extends CursorAdapter {
         } else {
             return 1;
         }
+    }
+
+    public boolean isEnabled(int position) {
+        return getItemViewType(position) != 0;
     }
 
     public void bindView(View view, Context context, Cursor cursor) {
