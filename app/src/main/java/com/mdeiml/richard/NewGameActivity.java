@@ -111,17 +111,7 @@ public class NewGameActivity extends AppCompatActivity {
                         if (eloTask != null) {
                             eloTask.cancel(true);
                         }
-                        eloTask = new CalculateEloTask(NewGameActivity.this) {
-                            public void onPostExecute(HashMap<String, Double> result) {
-                                elos.putAll(result);
-                                if (elos.containsKey(nameI.getText().toString()) && elos.containsKey(nameJ.getText().toString())) {
-                                    double elo1 = elos.get(nameI.getText().toString());
-                                    double elo2 = elos.get(nameJ.getText().toString());
-                                    double prob = 1 / (1 + Math.pow(10, (elo2 - elo1) / 400));
-                                    matchProp.setProgress((int) (prob * 100));
-                                }
-                            }
-                        };
+                        eloTask = new CalculateEloTask(NewGameActivity.this);
                         eloTask.execute(e.toString());
                     }
                 } else {
@@ -149,6 +139,16 @@ public class NewGameActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void addElos(HashMap<String, Double> newElos) {
+        elos.putAll(newElos);
+        if (elos.containsKey(nameI.getText().toString()) && elos.containsKey(nameJ.getText().toString())) {
+            double elo1 = elos.get(nameI.getText().toString());
+            double elo2 = elos.get(nameJ.getText().toString());
+            double prob = 1 / (1 + Math.pow(10, (elo2 - elo1) / 400));
+            matchProp.setProgress((int) (prob * 100));
+        }
     }
 
     public Cursor getNamesLike(String name) { // TODO: Escape %

@@ -4,10 +4,11 @@ import android.database.*;
 import android.database.sqlite.*;
 import android.content.Context;
 import android.os.AsyncTask;
-import java.util.Arrays;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import org.apache.commons.math3.linear.OpenMapRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
@@ -17,10 +18,12 @@ public class CalculateEloTask extends AsyncTask<String, Void, HashMap<String, Do
 
     private SavedMatchesDbHelper dbHelper;
     private String sqlPlayerStats;
+    private WeakReference<NewGameActivity> activity;
 
-    public CalculateEloTask(Context context) {
-        this.dbHelper = new SavedMatchesDbHelper(context);
-        this.sqlPlayerStats = context.getResources().getString(R.string.sql_player_stats);
+    public CalculateEloTask(NewGameActivity activity) {
+        this.dbHelper = new SavedMatchesDbHelper(activity);
+        this.sqlPlayerStats = activity.getResources().getString(R.string.sql_player_stats);
+        this.activity = new WeakReference(activity);
     }
     
     protected HashMap<String, Double> doInBackground(String... players) {
@@ -91,5 +94,12 @@ public class CalculateEloTask extends AsyncTask<String, Void, HashMap<String, Do
         }
         
         return result;
+    }
+
+    public void onPostExecute(HashMap<String, Double> result) {
+        NewGameActivity a = activity.get();
+        if (a != null) {
+            a.addElos(result);
+        }
     }
 }

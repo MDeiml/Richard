@@ -99,7 +99,7 @@
                         android:src="@drawable/ic_tennis_grey600_48dp" />
                 </LinearLayout>
             </LinearLayout>
-        </RelativeLayout>>
+        </RelativeLayout>
     </android.support.v7.widget.CardView>
     <LinearLayout
         android:id="@+id/buttons_layout"

@@ -5,7 +5,6 @@
 
     <string name="delete">Löschen</string>
     <string name="undo">Zurück</string>
-    <string name="save_game">Spiel speichern</string>
     <string name="point_seperator"> - </string>
     <string name="settings">Einstellungen</string>
     <string name="names">Namen</string>

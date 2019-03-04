@@ -26,8 +26,7 @@
         <activity
             android:name=".MatchActivity"
             android:label="@string/app_name"
-            android:configChanges="orientation|screenSize"
-            android:parentActivityName="com.mdeiml.richard.SavedGamesActivity">
+            android:configChanges="orientation|screenSize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mdeiml.richard.SavedGamesActivity" />
