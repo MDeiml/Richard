@@ -29,6 +29,9 @@ public class NewGameActivity extends AppCompatActivity {
     private AppCompatSeekBar matchProp;
     private TextView matchPropI;
     private TextView matchPropJ;
+    private View expandHeader;
+    private View advancedSettings;
+    private Spinner matchType;
 
     private SavedMatchesDbHelper dbHelper;
 
@@ -50,7 +53,12 @@ public class NewGameActivity extends AppCompatActivity {
         matchPropI = (TextView)findViewById(R.id.matchPropI);
         matchPropJ = (TextView)findViewById(R.id.matchPropJ);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        expandHeader = findViewById(R.id.expand_header);
+        advancedSettings = findViewById(R.id.advanced_settings);
+        matchType = (Spinner) findViewById(R.id.match_type);
+
         setSupportActionBar(toolbar);
+
         matchProp.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStartTrackingTouch(SeekBar p1) {
@@ -139,6 +147,24 @@ public class NewGameActivity extends AppCompatActivity {
             }
         });
 
+        expandHeader.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (advancedSettings.getVisibility() == View.GONE) {
+                    advancedSettings.setVisibility(View.VISIBLE);
+                    advancedSettings.animate().setDuration(200).alpha(1.0f);
+                } else {
+                    advancedSettings.animate().setDuration(200).alpha(0.0f).withEndAction(new Runnable() {
+                        public void run() {
+                            advancedSettings.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
+        });
+
+        ArrayAdapter matchTypeAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, new String[] { "Best of 3 - Matchtiebreak", "Best of 3", "Best of 5" });
+        matchTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        matchType.setAdapter(matchTypeAdapter);
     }
 
     public void addElos(HashMap<String, Double> newElos) {

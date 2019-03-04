@@ -138,14 +138,8 @@ public class MarkovMatrix {
         return getPropabilities(r, q);
     }
     
-    public static int getMatchMatrixIndex(int setsI, int setsJ) {
-        switch(setsI+"-"+setsJ) {
-            case "0-0": return 0;
-            case "0-1": return 1;
-            case "1-0": return 2;
-            case "1-1": return 3;
-            default: throw new RuntimeException("FAIL");
-        }
+    public static int getMatchMatrixIndex(int setsI, int setsJ, int n) {
+        return setsI * n + setsJ;
     }
     
     public static int getSetMatrixIndex(int gamesI, int gamesJ) {

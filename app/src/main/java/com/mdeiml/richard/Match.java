@@ -205,8 +205,8 @@ public class Match {
             byte[] totalSets = totalSets();
             byte s1 = totalSets[0];
             byte s2 = totalSets[1];
-            double pm1 = s1 == 1 ? 1 : matM.getEntry(MarkovMatrix.getMatchMatrixIndex(s1+1, s2), 0);
-            double pm2 = s2 == 1 ? 0 : matM.getEntry(MarkovMatrix.getMatchMatrixIndex(s1, s2+1), 0);
+            double pm1 = s1 == 1 ? 1 : matM.getEntry(MarkovMatrix.getMatchMatrixIndex(s1+1, s2, numSets), 0);
+            double pm2 = s2 == 1 ? 0 : matM.getEntry(MarkovMatrix.getMatchMatrixIndex(s1, s2+1, numSets), 0);
             double ps = getCurrentSet().getWinProb(matG1, matG2, matT1, matT2, matMT1, matMT2, matS1, matS2);
             return (float)(ps * pm1 + (1 - ps) * pm2);
         }
