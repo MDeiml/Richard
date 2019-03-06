@@ -81,13 +81,13 @@
                 android:textSize="30sp" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/expand_header"
+            android:id="@+id/expandHeader"
             android:clickable="true"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <ImageView
-                android:id="@+id/expand_button"
+                android:id="@+id/expandButton"
                 android:src="@drawable/ic_chevron_down_grey600_24dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
                 android:layout_margin="8dp" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/advanced_settings"
+            android:id="@+id/advancedSettings"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -117,7 +117,7 @@
                 android:text="Matchart"
                 android:textSize="20sp" />
             <Spinner
-                android:id="@+id/match_type"
+                android:id="@+id/matchType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

@@ -6,14 +6,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
         <TableRow
-            android:id="@+id/saved_game_sets1">
+            android:id="@+id/sgSets1">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/textHeading"
-                android:id="@+id/saved_game_player1" />
+                android:id="@+id/sgPlayer1" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -21,17 +21,17 @@
                 android:textSize="20sp"
                 android:textColor="@color/textContent"
                 android:gravity="center"
-                android:id="@+id/saved_game_points1" />
+                android:id="@+id/sgPoints1" />
         </TableRow>
         <TableRow
-            android:id="@+id/saved_game_sets2">
+            android:id="@+id/sgSets2">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textColor="@color/textHeading"
-                android:id="@+id/saved_game_player2" />
+                android:id="@+id/sgPlayer2" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -39,7 +39,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/textContent"
                 android:gravity="center"
-                android:id="@+id/saved_game_points2" />
+                android:id="@+id/sgPoints2" />
         </TableRow>
     </TableLayout>
 </com.mdeiml.richard.Card>
